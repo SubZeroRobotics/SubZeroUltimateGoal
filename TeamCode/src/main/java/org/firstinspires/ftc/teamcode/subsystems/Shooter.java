@@ -27,27 +27,48 @@ public class Shooter {
     private static double pusherPosition = 0;
     private static double linkagePosition = 0;
 
+    //other constants
+    private static double COUNTS_PER_REV = 7.0;
+    private static double ROTATIONS_PER_MINUTE = 5800.0;
 
+    //pid and elapsed time
     private static PIDFController pidf = new PIDFController(kp,ki,kd,kf);
-    private static ElapsedTime time = new ElapsedTime();
+    private static ElapsedTime linkageTimer = new ElapsedTime();
+    private static ElapsedTime pusherTimer = new ElapsedTime();
+    private static ElapsedTime shooterTimer = new ElapsedTime();
 
 
     public Shooter(HardwareMap hwmp){
         this.hw = hwmp;
         linkage =  hw.get(ServoEx.class, "linkage");
         pusher = hw.get(ServoEx.class, "pusher");
+        motor1 = hw.get(DcMotorEx.class, "motor1");
+        motor2 = hw.get(DcMotorEx.class, "motor2");
+        motor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
     }
-
-
-    public static void actuateShootingSequence(){
-
+    //shooting yeet
+    public static void actuateShootingSequence(double power){
+        //lift hopper up
+        actuateLinkage();
+        //turn on shooter
+        setPower(power);
+        ///push ring
+        shooterTimer.reset();
+        //loop through and flick with a 250 milli wait
+        for(int i = 0; i < 2; i++){
+            while(shooterTimer.milliseconds() < 250) {
+                pushRing();
+            }
+            shooterTimer.reset();
+        }
     }
 
     //push ring command
     private static void pushRing(){
-        time.reset();
-        while(time.milliseconds() < pusherTime){
+        pusherTimer.reset();
+        while(pusherTimer.milliseconds() < pusherTime){
             pusher.setPosition(pusherPosition);
         }
     }
@@ -55,21 +76,18 @@ public class Shooter {
     //lift slides up
 
     private static void actuateLinkage(){
-        time.reset();
-        while(time.milliseconds() < linkageTime){
+        linkageTimer.reset();
+        while(linkageTimer.milliseconds() < linkageTime){
             linkage.setPosition(linkagePosition);
         }
     }
 
-
     //sets power to motor using PIDF controller
     private static void setPower(double power){
-        
+        power = power * ((ROTATIONS_PER_MINUTE / 60) * COUNTS_PER_REV);
+        pidf.setSetPoint(power);
+        double output = pidf.calculate(motor1.getVelocity());
+        motor1.setVelocity(output);
+        motor2.setVelocity(output);
     }
-
-
-
-
-
-
 }
