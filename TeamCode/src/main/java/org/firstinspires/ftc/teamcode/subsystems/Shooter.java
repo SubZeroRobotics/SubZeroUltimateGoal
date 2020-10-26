@@ -65,6 +65,9 @@ public class Shooter {
         }
     }
 
+    //stop motor lol
+    public static void stopFlyWheel(){ motor1.setPower(0.0);  motor2.setPower(0.0); }
+
     //push ring command
     private static void pushRing(){
         pusherTimer.reset();
@@ -90,4 +93,6 @@ public class Shooter {
         motor1.setVelocity(output);
         motor2.setVelocity(output);
     }
+
+
 }
