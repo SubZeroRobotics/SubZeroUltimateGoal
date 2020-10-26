@@ -1,6 +1,5 @@
-package org.firstinspires.ftc.teamcode.Autonomous;
+package org.firstinspires.ftc.teamcode.autonomous;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.opencv.core.Core;
@@ -13,7 +12,6 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 import org.openftc.easyopencv.OpenCvPipeline;
-import org.openftc.revextensions2.ExpansionHubEx;
 
 
 /*
@@ -23,10 +21,10 @@ import org.openftc.revextensions2.ExpansionHubEx;
 @TeleOp
 public class VisionByAverage extends LinearOpMode {
     OpenCvCamera phoneCam;
-    public static int one = 25;
-    public static int two = 25;
-    public static int three = 100;
-    public static int four = 100;
+    private static int one = 25;
+    private static int two = 25;
+    private static int three = 100;
+    private static int four = 100;
     double range1;
     double range2;
     double range3;
