@@ -19,7 +19,8 @@ public class TeleOp extends LinearOpMode {
     Shooter shooter;
     double frontLeftPower, frontRightPower, backLeftPower,backRightPower = 0;
     SampleMecanumDrive drive;
-    ButtonReader buttonReader;
+    ButtonReader buttonA;
+    ButtonReader buttonB;
     Pose2d robotPose = new Pose2d();
     public static  Pose2d shooterPose = new Pose2d(0,0,0);
 
@@ -29,10 +30,12 @@ public class TeleOp extends LinearOpMode {
          g1 = new GamepadEx(gamepad1);
          g2 = new GamepadEx(gamepad2);
          shooter = new Shooter(hardwareMap);
-         buttonReader = new ButtonReader(g1, GamepadKeys.Button.A);
+         buttonA = new ButtonReader(g1, GamepadKeys.Button.A);
+         buttonB = new ButtonReader(g1, GamepadKeys.Button.B);
+
 
         drive = new SampleMecanumDrive(hardwareMap);
-         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         waitForStart();
         while(opModeIsActive()){
             waitForStart();
@@ -49,13 +52,13 @@ public class TeleOp extends LinearOpMode {
                 robotPose =  drive.getPoseEstimate();
         }
         //---------------------------subsystem----------------------------
-        if(buttonReader.wasJustPressed()){
+        if(buttonA.wasJustPressed()){
             drive.turnAsync(turnToGoal(robotPose));
         }
 
-
-
-        
+        if(buttonB.wasJustPressed()){
+            shooter.actuateShootingSequence(1);
+        }
 
     }
 

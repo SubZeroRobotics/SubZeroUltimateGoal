@@ -53,7 +53,7 @@ public class Shooter {
 
     }
     //shooting yeet
-    public static void actuateShootingSequence(double power){
+    public  void actuateShootingSequence(double power){
         //lift hopper up
         liftLinkage();
         //turn on shooter
