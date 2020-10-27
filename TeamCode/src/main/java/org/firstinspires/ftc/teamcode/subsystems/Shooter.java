@@ -21,11 +21,15 @@ public class Shooter {
     private static double kd = 0;
     private static double kf = 0;
 
-    //servo position varaibles
+    //servo position variables
     private static double pusherTime = 0;
+    private static double pusherTime2 = 0;
     private static double linkageTime = 0;
+    private static double linkageTime2 = 0;
     private static double pusherPosition = 0;
+    private static double pusherPosition2 = 0;
     private static double linkagePosition = 0;
+    private static double linkagePosition2 = 0;
 
     //other constants
     private static double COUNTS_PER_REV = 7.0;
@@ -51,7 +55,7 @@ public class Shooter {
     //shooting yeet
     public static void actuateShootingSequence(double power){
         //lift hopper up
-        actuateLinkage();
+        liftLinkage();
         //turn on shooter
         setPower(power);
         ///push ring
@@ -63,6 +67,8 @@ public class Shooter {
             }
             shooterTimer.reset();
         }
+        lowerLinkage();
+
     }
 
     //stop motor lol
@@ -74,14 +80,26 @@ public class Shooter {
         while(pusherTimer.milliseconds() < pusherTime){
             pusher.setPosition(pusherPosition);
         }
+        pusherTimer.reset();
+        while(pusherTimer.milliseconds() < pusherTime2){
+            pusher.setPosition(pusherPosition);
+        }
     }
 
     //lift slides up
 
-    private static void actuateLinkage(){
+    private static void liftLinkage(){
         linkageTimer.reset();
         while(linkageTimer.milliseconds() < linkageTime){
             linkage.setPosition(linkagePosition);
+        }
+    }
+
+    //lower slides
+    private static void lowerLinkage(){
+        linkageTimer.reset();
+        while(linkageTimer.milliseconds() < linkageTime){
+            linkage.setPosition(linkagePosition2);
         }
     }
 
