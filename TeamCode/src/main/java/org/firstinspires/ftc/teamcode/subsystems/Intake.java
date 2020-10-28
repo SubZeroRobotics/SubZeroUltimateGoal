@@ -24,4 +24,8 @@ public class Intake {
         motor1.setPower(power);
     }
 
+    public void stop(){
+        motor1.setPower(0);
+        motor2.setPower(0);
+    }
 }

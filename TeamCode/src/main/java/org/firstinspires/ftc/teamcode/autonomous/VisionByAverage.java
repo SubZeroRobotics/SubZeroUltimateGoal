@@ -32,6 +32,11 @@ public class VisionByAverage extends LinearOpMode {
     double range5;
     double range6;
     double rings = 0;
+    String side;
+
+    public VisionByAverage(String side){
+        this.side = side;
+    }
 
     @Override
     public void runOpMode() {
