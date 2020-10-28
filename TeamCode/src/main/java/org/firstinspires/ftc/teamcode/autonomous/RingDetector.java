@@ -1,7 +1,10 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import android.sax.StartElementListener;
+
+import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -13,12 +16,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-/*
- * This version of the internal camera example uses EasyOpenCV's interface to the
- * original Android camera API
- */
-@TeleOp
-public class VisionByAverage extends LinearOpMode {
+public class RingDetector {
     OpenCvCamera phoneCam;
     private static int one = 25;
     private static int two = 25;
@@ -33,16 +31,18 @@ public class VisionByAverage extends LinearOpMode {
     double rings = 0;
     String side;
 
-    public VisionByAverage(String side){
+    HardwareMap hwmp;
+    Telemetry telemetry;
+    public RingDetector(String side, HardwareMap hw, Telemetry tele){
         this.side = side;
+        this.hwmp = hw;
+        this.telemetry = tele;
     }
 
-    @Override
-    public void runOpMode() {
-
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+    public double getRingPosition(){
+        int cameraMonitorViewId = hwmp.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hwmp.appContext.getPackageName());
         phoneCam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
-        phoneCam.setPipeline(new SamplePipeline());
+        phoneCam.setPipeline(new RingDetector.SamplePipeline());
         phoneCam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
@@ -52,28 +52,9 @@ public class VisionByAverage extends LinearOpMode {
         telemetry.addLine("Waiting for start");
         telemetry.update();
 
-
-        waitForStart();
-
-        while (opModeIsActive()) {
-            /*
-             * Send some stats to the telemetry
-             */
-//            telemetry.addData("Frame Count", phoneCam.getFrameCount());
-//            telemetry.addData("FPS", String.format("%.2f", phoneCam.getFps()));
-//            telemetry.addData("Total frame time ms", phoneCam.getTotalFrameTimeMs());
-//            telemetry.addData("Pipeline time ms", phoneCam.getPipelineTimeMs());
-//            telemetry.addData("Overhead time ms", phoneCam.getOverheadTimeMs());
-//            telemetry.addData("Theoretical max FPS", phoneCam.getCurrentPipelineMaxFps());
-//            telemetry.update();
-
-            if (gamepad1.a) {
-                phoneCam.stopStreaming();
-                //phoneCam.closeCameraDevice();
-            }
-            sleep(100);
-        }
+        return rings;
     }
+
 
     class SamplePipeline extends OpenCvPipeline {
         boolean viewportPaused = false;
@@ -136,3 +117,5 @@ public class VisionByAverage extends LinearOpMode {
         }
     }
 }
+
+
