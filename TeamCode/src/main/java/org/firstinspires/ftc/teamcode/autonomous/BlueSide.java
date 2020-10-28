@@ -10,7 +10,6 @@ import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 
 public class BlueSide extends LinearOpMode {
-
        //creating ring state machine
        public static enum RingPosition {
             ONE,
@@ -34,7 +33,6 @@ public class BlueSide extends LinearOpMode {
 
         RingPosition ringPosition = RingPosition.NULL;
 
-
         //determine the start position
         Pose2d startPose = new Pose2d(0,0,0);
 
@@ -49,14 +47,13 @@ public class BlueSide extends LinearOpMode {
         }else{
             ringPosition = RingPosition.ZERO;
         }
-
-        //RING POSITION SHOULD CHANGE
-
+        
         waitForStart();
 
         if(isStopRequested()) return;
 
         switch(ringPosition){
+            //TODO: ADD POWER SHOT METHOD
             case FOUR:
                  Trajectory depositFirstWobblyGoal = drive.trajectoryBuilder(startPose)
                         .splineTo(new Vector2d(0,0), Math.toRadians(0))
@@ -77,7 +74,6 @@ public class BlueSide extends LinearOpMode {
                         .build();
                 drive.followTrajectory(pickupSecondWobble);
                 ringPosition = RingPosition.CONTINUE;
-
 
                 break;
             case CONTINUE:
@@ -104,6 +100,7 @@ public class BlueSide extends LinearOpMode {
                 break;
 
             case ONE:
+                //TODO: ADD POWER SHOT METHOD
                 Trajectory depositFirstWobblyGoalONE = drive.trajectoryBuilder(startPose)
                         .splineTo(new Vector2d(1,1), Math.toRadians(0))
                         .splineTo(new Vector2d(0,0), Math.toRadians(0))
@@ -127,6 +124,7 @@ public class BlueSide extends LinearOpMode {
                 break;
 
             case ZERO:
+                //TODO: ADD POWER SHOT METHOD
                 Trajectory depositFirstWobblyGoalZERO = drive.trajectoryBuilder(startPose)
                         .splineTo(new Vector2d(1,0), Math.toRadians(0))
                         .splineTo(new Vector2d(0,0), Math.toRadians(0))
@@ -148,9 +146,7 @@ public class BlueSide extends LinearOpMode {
                 ringPosition = RingPosition.CONTINUE;
                 break;
         }
-
     }
     public static void depositWobblyGoal(){
-
     }
 }
