@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
+import org.firstinspires.ftc.teamcode.util.TrajectoryStorage;
 
 public class BlueSide extends LinearOpMode {
        //creating ring state machine
@@ -18,11 +19,12 @@ public class BlueSide extends LinearOpMode {
             NULL,
             CONTINUE,
         };
-
        double amtOfRings;
        public RingPosition ringPosition;
        public RingDetector ringDetector;
        private double rings;
+       public TrajectoryStorage trajectoryStorage;
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -30,6 +32,7 @@ public class BlueSide extends LinearOpMode {
         Shooter shooter = new Shooter(hardwareMap);
         Intake  noodleIntake = new Intake(hardwareMap);
         ringDetector = new RingDetector("BLUE", hardwareMap, telemetry);
+
 
         RingPosition ringPosition = RingPosition.NULL;
 
@@ -47,7 +50,7 @@ public class BlueSide extends LinearOpMode {
         }else{
             ringPosition = RingPosition.ZERO;
         }
-        
+
         waitForStart();
 
         if(isStopRequested()) return;
@@ -59,7 +62,6 @@ public class BlueSide extends LinearOpMode {
                         .splineTo(new Vector2d(0,0), Math.toRadians(0))
                         .splineTo(new Vector2d(0,0), Math.toRadians(0))
                         .addDisplacementMarker(() -> {
-                            //deposit wobbly goal
                             depositWobblyGoal();
                         })
                         .build();
@@ -72,14 +74,14 @@ public class BlueSide extends LinearOpMode {
                             //grab wobbly goal
                         })
                         .build();
+                  trajectoryStorage = new TrajectoryStorage(pickupSecondWobble);
                 drive.followTrajectory(pickupSecondWobble);
                 ringPosition = RingPosition.CONTINUE;
 
                 break;
             case CONTINUE:
                 noodleIntake.setPower(1);
-
-                Trajectory intakeAutoRings = drive.trajectoryBuilder(pickupSecondWobble.end(), false)
+                Trajectory intakeAutoRings = drive.trajectoryBuilder(trajectoryStorage.end(), false)
                         .splineTo(new Vector2d(0,0), Math.toRadians(0))
                         .addDisplacementMarker(() -> {
                             //stop intake
@@ -118,6 +120,8 @@ public class BlueSide extends LinearOpMode {
                             //grab wobbly goal
                         })
                         .build();
+                trajectoryStorage = new TrajectoryStorage(pickupSecondWobbleONE);
+
                 drive.followTrajectory(pickupSecondWobbleONE);
                 ringPosition = RingPosition.CONTINUE;
 
@@ -142,6 +146,7 @@ public class BlueSide extends LinearOpMode {
                             //grab wobbly goal
                         })
                         .build();
+                trajectoryStorage = new TrajectoryStorage(pickupSecondWobbleZERO);
                 drive.followTrajectory(pickupSecondWobbleZERO);
                 ringPosition = RingPosition.CONTINUE;
                 break;

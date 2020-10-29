@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 
 public class TeleOp extends LinearOpMode {
@@ -17,6 +18,7 @@ public class TeleOp extends LinearOpMode {
     GamepadEx g1;
     GamepadEx g2;
     Shooter shooter;
+    Intake noodleIntake;
     double frontLeftPower, frontRightPower, backLeftPower,backRightPower = 0;
     SampleMecanumDrive drive;
     ButtonReader buttonA;
@@ -30,6 +32,8 @@ public class TeleOp extends LinearOpMode {
          g1 = new GamepadEx(gamepad1);
          g2 = new GamepadEx(gamepad2);
          shooter = new Shooter(hardwareMap);
+         noodleIntake = new Intake(hardwareMap);
+
          buttonA = new ButtonReader(g1, GamepadKeys.Button.A);
          buttonB = new ButtonReader(g1, GamepadKeys.Button.B);
 
@@ -52,13 +56,21 @@ public class TeleOp extends LinearOpMode {
                 robotPose =  drive.getPoseEstimate();
         }
         //---------------------------subsystem----------------------------
+
+        //TURN TO GOAL
         if(buttonA.wasJustPressed()){
-            drive.turnAsync(turnToGoal(robotPose));
+            drive.turn(turnToGoal(robotPose));
         }
 
+        //SHOOTING SEQUENCE
         if(buttonB.wasJustPressed()){
             shooter.actuateShootingSequence(1);
         }
+
+        //INTAKE
+        noodleIntake.setPower(g1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
+        noodleIntake.setPower(-g1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER));
+
 
     }
 
@@ -68,7 +80,8 @@ public class TeleOp extends LinearOpMode {
         //calc desired heading
         double x = robotPose.getX();
         double y = robotPose.getY();
-        double turnAngle = Math.atan((y - shooterPose.getY())/(x - shooterPose.getX()));
+        double turnAngle = Math.atan2(shooterPose.getY() - robotPose.getY(), shooterPose.getX() - robotPose.getX());
+
 
         return  turnAngle;
     }
