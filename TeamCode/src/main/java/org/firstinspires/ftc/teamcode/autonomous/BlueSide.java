@@ -87,12 +87,12 @@ public class BlueSide extends LinearOpMode {
                             //stop intake
                             noodleIntake.stop();
                         })
-                        .addDisplacementMarker(() -> {
-                            shooter.actuateShootingSequence(1);
-                        })
+
                         .build();
 
                 drive.followTrajectory(intakeAutoRings);
+                
+                shooter.actuateShootingSequence(1);
 
                 Trajectory park = drive.trajectoryBuilder(intakeAutoRings.end())
                         .forward(0)

@@ -97,9 +97,12 @@ public class RingDetector {
                 rings = 0;
             }
 
+
+
             telemetry.addData("Average Color", averageColor);
             telemetry.addData("Ring", rings);
             telemetry.update();
+
             return ExtractMat;
         }
 
