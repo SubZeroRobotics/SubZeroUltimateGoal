@@ -132,7 +132,7 @@ public class RingDetectorV2 {
 
 
 
-            return YCbCr;
+            return outputMat;
         }
     }
 }
