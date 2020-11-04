@@ -50,17 +50,17 @@ public class RingDetectorV2 {
     Mat outputMat = new Mat();
 
     public int[] lowerRect = {
-            0,
-            0,
-            0,
-            0
+            (int)Math.round(YCbCr.rows() * .25),
+            (int)Math.round(YCbCr.rows() * .25),
+            (int)Math.round(YCbCr.cols() * .25),
+            (int)Math.round(YCbCr.cols() * .25)
     };
 
   public  int[] upperRect = {
-            0,
-            0,
-            0,
-            0
+          (int)Math.round(YCbCr.rows() * .25),
+          (int)Math.round(YCbCr.rows() * .25),
+          (int)Math.round(YCbCr.cols() * .25),
+          (int)Math.round(YCbCr.cols() * .25)
     };
 
 
@@ -96,6 +96,7 @@ public class RingDetectorV2 {
             upperCrop = YCbCr.submat(upperRect[0], upperRect[1], upperRect[2], upperRect[3]);
 
 
+
             //extract the Cb channel
             Core.extractChannel(lowerCrop, lowerCrop, 2);
             Core.extractChannel(upperCrop,upperCrop,2);
@@ -124,13 +125,6 @@ public class RingDetectorV2 {
                     1,
                     new Scalar(0,0,255),
                     3);
-
-
-
-
-
-
-
 
             return outputMat;
         }
