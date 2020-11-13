@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
@@ -19,9 +20,12 @@ public class BlueSide extends LinearOpMode {
             NULL,
             CONTINUE,
         };
+
+
+        linear
        double amtOfRings;
        public RingPosition ringPosition;
-       public RingDetector ringDetector;
+       public RingDetectorV2 ringDetector;
        private double rings;
        public TrajectoryStorage trajectoryStorage;
 
@@ -30,9 +34,11 @@ public class BlueSide extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         Shooter shooter = new Shooter(hardwareMap);
-        Intake  noodleIntake = new Intake(hardwareMap);
-        ringDetector = new RingDetector("BLUE", hardwareMap, telemetry);
+        Intake  intake = new Intake(hardwareMap);
+        ringDetector = new RingDetectorV2("BLUE", hardwareMap, telemetry);
 
+        //start stream
+        FtcDashboard.getInstance().startCameraStream(ringDetector.phoneCam, 60);
 
         RingPosition ringPosition = RingPosition.NULL;
 
@@ -85,14 +91,12 @@ public class BlueSide extends LinearOpMode {
                         .splineTo(new Vector2d(0,0), Math.toRadians(0))
                         .addDisplacementMarker(() -> {
                             //stop intake
-                            noodleIntake.stop();
+                            intake.stop();
                         })
 
                         .build();
 
                 drive.followTrajectory(intakeAutoRings);
-                
-                shooter.actuateShootingSequence(1);
 
                 Trajectory park = drive.trajectoryBuilder(intakeAutoRings.end())
                         .forward(0)

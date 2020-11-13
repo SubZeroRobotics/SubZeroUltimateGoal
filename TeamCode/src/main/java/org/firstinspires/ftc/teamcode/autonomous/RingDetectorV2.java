@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -15,6 +16,9 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 import org.openftc.easyopencv.OpenCvPipeline;
 
+
+@Config
+
 public class RingDetectorV2 {
     OpenCvCamera phoneCam;
     HardwareMap hwmp;
@@ -22,7 +26,7 @@ public class RingDetectorV2 {
     Double ringCount = 0.0;
 
 
-    public RingDetectorV2(HardwareMap hw, Telemetry telemetry){
+    public RingDetectorV2(String Color, HardwareMap hw, Telemetry telemetry){
         this.hwmp = hw;
         telemetry = telemetry;
     }
