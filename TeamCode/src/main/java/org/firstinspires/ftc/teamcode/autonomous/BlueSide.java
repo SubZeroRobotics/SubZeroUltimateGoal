@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
@@ -11,6 +12,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.util.TrajectoryStorage;
 
+@Disabled
 public class BlueSide extends LinearOpMode {
        //creating ring state machine
        public static enum RingPosition {
@@ -22,7 +24,7 @@ public class BlueSide extends LinearOpMode {
         };
 
 
-        linear
+
        double amtOfRings;
        public RingPosition ringPosition;
        public RingDetectorV2 ringDetector;
@@ -86,7 +88,7 @@ public class BlueSide extends LinearOpMode {
 
                 break;
             case CONTINUE:
-                noodleIntake.setPower(1);
+                intake.setPower(1);
                 Trajectory intakeAutoRings = drive.trajectoryBuilder(trajectoryStorage.end(), false)
                         .splineTo(new Vector2d(0,0), Math.toRadians(0))
                         .addDisplacementMarker(() -> {

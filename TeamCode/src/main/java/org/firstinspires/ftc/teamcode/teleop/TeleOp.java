@@ -64,7 +64,7 @@ public class TeleOp extends LinearOpMode {
 
         //SHOOTING SEQUENCE
         if(buttonB.wasJustPressed()){
-            shooter.actuateShootingSequence(1);
+            //shooter.actuateShootingSequence(1);
         }
 
         //INTAKE
