@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.subsystems;
+package org.firstinspires.ftc.teamcode.teleop;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -10,8 +10,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
 
-@TeleOp(name = "TeleOpOBJ")
-public class TeleOpOBJ extends LinearOpMode {
+@TeleOp(name = "FullTeleOp")
+public class
+TeleOpOBJ extends LinearOpMode {
 
     //Shooter
     DcMotor sm1;
