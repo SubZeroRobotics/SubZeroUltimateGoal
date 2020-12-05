@@ -32,7 +32,7 @@ public class BlueSideV2 extends LinearOpMode {
         AutoTrajectories autoTrajectories = new AutoTrajectories(drive);
 
         autoTrajectories.initTrajectories(startPose);
-        
+
 
         //vision code here
         PathState pathState = PathState.RING4;

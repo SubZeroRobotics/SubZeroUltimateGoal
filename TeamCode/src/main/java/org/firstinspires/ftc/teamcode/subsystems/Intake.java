@@ -18,7 +18,7 @@ public class Intake {
         motor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        motor2.setDirection(DcMotorSimple.Direction.REVERSE);
+        motor1.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
     }

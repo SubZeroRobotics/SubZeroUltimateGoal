@@ -44,7 +44,7 @@ public class AutoTrajectories {
         Trajectory trajFour4 = drive.trajectoryBuilder(trajFour3.end())
                 .lineToLinearHeading(new Pose2d(75,28, 180))
                 .build();
-
+        //add to arraylist
         trajectoryRing1.add(trajFour1);
         trajectoryRing1.add(trajFour2);
         trajectoryRing1.add(trajFour3);

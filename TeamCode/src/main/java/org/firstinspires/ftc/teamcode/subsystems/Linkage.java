@@ -6,23 +6,27 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 public class Linkage {
     HardwareMap hardwareMap;
-    SimpleServo linkage;
+    Servo linkage;
     Servo flicker;
 
-    public  double flickerPush = 0;
-    public  double flickerPull = 0.4;
-    private  double linkageUp = 0;
-    private  double linkageDown = 0;
+    public  double flickerPush;
+    public  double flickerPull;
+    private final double linkageUp;
+    private final double linkageDown;
+
+    private long millis;
 
 
 
-    public Linkage(HardwareMap hardwareMap, double push, double pull){
+    public Linkage(HardwareMap hardwareMap,double up, double down, double in, double out){
         this.hardwareMap = hardwareMap;
-        //linkage = new SimpleServo(hardwareMap, "linkage");
         flicker = hardwareMap.get(Servo.class, "pusher");
-
-        flickerPush = push;
-        flickerPull = pull;
+        linkage = hardwareMap.get(Servo.class, "linkage");
+        linkageUp = up;
+        linkageDown = down;
+        flickerPush = in;
+        flickerPull = out;
+        this.millis = millis;
     }
 
     private enum State {
@@ -39,6 +43,24 @@ public class Linkage {
             this.timeStamp = timeStamp;
         }
     }
+
+    public void raise(){
+        linkage.setPosition(linkageUp);
+    }
+
+    public void lower(){
+        linkage.setPosition(linkageDown);
+    }
+
+    public void flickerIn(){
+        flicker.setPosition(flickerPush);
+    }
+    public void flickerOut(){
+        flicker.setPosition(flickerPull);
+    }
+
+
+
 
     //run whole subsystem
     public void run(){
@@ -95,9 +117,5 @@ public class Linkage {
         }
 
     }
-
-
-
-
 
 }

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -9,108 +10,50 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.subsystems.Intake;
+import org.firstinspires.ftc.teamcode.subsystems.Linkage;
+import org.firstinspires.ftc.teamcode.subsystems.Shooter;
+
 
 @TeleOp(name = "FullTeleOp")
 public class
 TeleOpOBJ extends LinearOpMode {
 
     //Shooter
-    DcMotor sm1;
-    DcMotor sm2;
-
-    Servo linkage;
-    Servo pusher;
+    public Shooter shooter;
+    public Linkage linkage;
     Servo angleFlap;
-    //Intake
-    DcMotor im1;
-    DcMotor im2;
-
-    //Dt
-
-    DcMotor FL;
-    DcMotor BL;
-    DcMotor FR;
-    DcMotor BR;
-
-
-    //vars
-    public  double up = 0.27;
-    public  double down = 0.87;
-
-    public  double in = .05;
-    public  double out = .32;
+    Intake intake;
 
     public static double flapAngle = .35;
-
     public static double shooterPower = .95;
-
     public static long flickerDelay = 200;
-
     public boolean bPressed = false;
-
     public boolean aPressed = false;
-
-
+    public double forwardPower;
+    public double reversePower;
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-        sm1 = hardwareMap.get(DcMotor.class, "sm1");
-        sm2 = hardwareMap.get(DcMotor.class, "sm2");
-        linkage = hardwareMap.get(Servo.class, "linkage");
-        pusher = hardwareMap.get(Servo.class, "pusher");
+        shooter = new Shooter(hardwareMap);
+        linkage = new Linkage(hardwareMap, 0.27,0.87, 0.05,0.32);
         angleFlap = hardwareMap.get(Servo.class, "flap");
-        im1 = hardwareMap.get(DcMotor.class, "im1");
-        im2 = hardwareMap.get(DcMotor.class, "im2");
-        FL = hardwareMap.get(DcMotor.class, "FL");
-        BL = hardwareMap.get(DcMotor.class, "BL");
-        FR = hardwareMap.get(DcMotor.class, "FR");
-        BR = hardwareMap.get(DcMotor.class, "BR");
-
-
-
-        MotorConfigurationType flywheel1Config = sm1.getMotorType().clone();
-        MotorConfigurationType flywheel2Config = sm2.getMotorType().clone();
-
-        flywheel1Config.setAchieveableMaxRPMFraction(1.0);
-
-        sm1.setMotorType(flywheel1Config);
-
-        flywheel2Config.setAchieveableMaxRPMFraction(1.0);
-
-        sm2.setMotorType(flywheel2Config);
-
-        im1.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        FL.setDirection(DcMotorSimple.Direction.REVERSE);
-        BL.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        sm1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        sm2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        FL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        BL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        BR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        FR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        sm1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        sm2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-
-
+        intake = new Intake(hardwareMap);
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         waitForStart();
-
-        while (opModeIsActive()){
+        while (!isStopRequested()){
 
             //intake
-            double fowardPower = -gamepad1.left_trigger;
-            double reversePower = -gamepad1.right_trigger;
+             forwardPower = -gamepad1.left_trigger;
+             reversePower = -gamepad1.right_trigger;
+             intake.setPower(forwardPower - reversePower);
 
-            im1.setPower(fowardPower - reversePower);
-            im2.setPower(fowardPower - reversePower);
-
+            //angle flap
             angleFlap.setPosition(flapAngle);
-
 
 
             //shooter
@@ -118,36 +61,40 @@ TeleOpOBJ extends LinearOpMode {
                 aPressed = !aPressed;
                 while (gamepad1.a);
             }
-
             if(aPressed){
-                sm1.setPower(shooterPower);
-                sm2.setPower(shooterPower);
+                shooter.setNoPIDPower(shooterPower);
             }else {
-                sm1.setPower(0);
-                sm2.setPower(0);
+                shooter.stop();
             }
+
             //linkage
             if (gamepad1.b) {
                 bPressed = !bPressed;
                 while (gamepad1.b);
             }
-
             if(bPressed){
-                linkage.setPosition(up);
+                linkage.raise();
             }else {
-                linkage.setPosition(down);
+                linkage.lower();
             }
 
 
+            //drivetrain
+            drive.setWeightedDrivePower(
+                    new Pose2d(
+                            -gamepad1.left_stick_y,
+                            -gamepad1.left_stick_x,
+                            -gamepad1.right_stick_x
+                    )
+            );
 
-            double y = -gamepad1.left_stick_y; // Remember, this is reversed!
-            double x = gamepad1.left_stick_x;
-            double rx = gamepad1.right_stick_x;
+            drive.update();
+            Pose2d poseEstimate = drive.getPoseEstimate();
+            telemetry.addData("x", poseEstimate.getX());
+            telemetry.addData("y", poseEstimate.getY());
+            telemetry.addData("heading", poseEstimate.getHeading());
+            telemetry.update();
 
-            FL.setPower(y + x + rx);
-            BL.setPower(y - x + rx);
-            FR.setPower(y - x - rx);
-            BR.setPower(y + x - rx);
 
             if (gamepad1.x){
                 sleep(20);
@@ -159,15 +106,11 @@ TeleOpOBJ extends LinearOpMode {
                 sleep(flickerDelay);
             }
 
-
-
-
         }
     }
-
     public void actuateFlicker(){
-        pusher.setPosition(in);
+        linkage.flickerIn();
         sleep(flickerDelay);
-        pusher.setPosition(out);
+        linkage.flickerOut();
     }
 }
