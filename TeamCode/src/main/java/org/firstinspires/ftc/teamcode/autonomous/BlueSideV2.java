@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.drive.opmode;
+package org.firstinspires.ftc.teamcode.autonomous;
 
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -10,8 +10,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.autonomous.trajectories.AutoTrajectories;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
-@Autonomous(name = "testingt")
-public class TestingTing extends LinearOpMode {
+@Autonomous(name = "BlueSideV2")
+public class BlueSideV2 extends LinearOpMode {
 
     public enum PathState{
         RING1,
