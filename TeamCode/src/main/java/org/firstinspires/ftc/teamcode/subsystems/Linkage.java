@@ -2,23 +2,27 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 public class Linkage {
     HardwareMap hardwareMap;
     SimpleServo linkage;
-    SimpleServo flicker;
+    Servo flicker;
 
-    private  double flickerPush = 0;
-    private  double flickerPull = 0;
+    public  double flickerPush = 0;
+    public  double flickerPull = 0.4;
     private  double linkageUp = 0;
     private  double linkageDown = 0;
 
 
 
-    public Linkage(HardwareMap hardwareMap){
+    public Linkage(HardwareMap hardwareMap, double push, double pull){
         this.hardwareMap = hardwareMap;
-        linkage = new SimpleServo(hardwareMap, "linkage");
-        flicker = new SimpleServo(hardwareMap, "pusher");
+        //linkage = new SimpleServo(hardwareMap, "linkage");
+        flicker = hardwareMap.get(Servo.class, "pusher");
+
+        flickerPush = push;
+        flickerPull = pull;
     }
 
     private enum State {
@@ -37,8 +41,8 @@ public class Linkage {
     }
 
     //run whole subsystem
-    private void run(double power){
-        State state = State.RAISING_LINKAGE;
+    public void run(){
+        State state = State.SHOT1;
         long startTime = System.currentTimeMillis();
         while(true) {
             long elapsedTime = System.currentTimeMillis() - startTime;
@@ -48,7 +52,7 @@ public class Linkage {
             switch (state){
                 case RAISING_LINKAGE:
                     if (progressState){
-                        linkage.setPosition(linkageUp);
+                       // linkage.setPosition(linkageUp);
                         state = State.SHOT1;
                     }
                     break;

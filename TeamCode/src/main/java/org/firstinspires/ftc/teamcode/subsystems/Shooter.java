@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.configuration.MotorControllerConfiguration;
+import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.PIDController;
@@ -18,11 +20,11 @@ public class Shooter {
     //other constants
      static final double COUNTS_PER_REV = 28;
     private static final double ROTATIONS_PER_MINUTE = 5480;
-    private static double currentRPM;
+    public static double currentRPM;
     private static long lastTime;
     private static double lastPosition;
     private boolean runningPID = false;
-    
+
     //pid and elapsed time
     private PIDController pidcontroller;
     private static ElapsedTime linkageTimer = new ElapsedTime();
@@ -35,15 +37,26 @@ public class Shooter {
      //   indexer = new SimpleServo(hw, "indexer");
         motor1 = hw.get(DcMotorEx.class, "motor1");
         motor2 = hw.get(DcMotorEx.class, "motor2");
-        motor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        MotorConfigurationType flywheel1Config = motor1.getMotorType().clone();
+        MotorConfigurationType flywheel2Config = motor2.getMotorType().clone();
+
+        flywheel1Config.setAchieveableMaxRPMFraction(1.0);
+
+        motor1.setMotorType(flywheel1Config);
+
+        flywheel2Config.setAchieveableMaxRPMFraction(1.0);
+
+        motor2.setMotorType(flywheel2Config);
+
+        motor1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motor2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         motor1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         motor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         lastTime = System.currentTimeMillis();
         lastPosition = motor1.getCurrentPosition();
-        pidcontroller = new PIDController(0.0,0.0,0.0,.9, 5480);
+        pidcontroller = new PIDController(0.4,0.0,0.0,.9, 6000);
     }
 
     public void start(){
@@ -67,8 +80,9 @@ public class Shooter {
            double power =  pidcontroller.calculate(currentRPM);
             motor1.setPower(power);
             motor2.setPower(power);
+        }else{
+            stop();
         }
-
     }
 
     public void setNoPIDPower(double power){

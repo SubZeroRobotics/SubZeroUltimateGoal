@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -12,7 +13,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.util.TrajectoryStorage;
 
-@Disabled
+@Autonomous(name = "BlueSiden")
 public class BlueSide extends LinearOpMode {
        //creating ring state machine
        public static enum RingPosition {
@@ -35,8 +36,8 @@ public class BlueSide extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        Shooter shooter = new Shooter(hardwareMap);
-        Intake  intake = new Intake(hardwareMap);
+       // Shooter shooter = new Shooter(hardwareMap);
+       // Intake  intake = new Intake(hardwareMap);
         ringDetector = new RingDetectorV2("BLUE", hardwareMap, telemetry);
 
         //start stream
@@ -45,10 +46,11 @@ public class BlueSide extends LinearOpMode {
         RingPosition ringPosition = RingPosition.NULL;
 
         //determine the start position
-        Pose2d startPose = new Pose2d(0,0,0);
+        Pose2d startPose = new Pose2d(-60.3,23.8,0);
 
         //do vision stuffs here
-        rings = ringDetector.getRingPosition();
+       // rings = ringDetector.getRingPosition();
+        rings = 1;
 
         if(rings == 1){
             ringPosition = RingPosition.ONE;
@@ -66,12 +68,12 @@ public class BlueSide extends LinearOpMode {
         switch(ringPosition){
             //TODO: ADD POWER SHOT METHOD
             case FOUR:
+                telemetry.addData("STATE : ", ringPosition);
+                telemetry.update();
                  Trajectory depositFirstWobblyGoal = drive.trajectoryBuilder(startPose)
-                        .splineTo(new Vector2d(0,0), Math.toRadians(0))
-                        .splineTo(new Vector2d(0,0), Math.toRadians(0))
-                        .addDisplacementMarker(() -> {
-                            depositWobblyGoal();
-                        })
+                        .splineTo(new Vector2d(0,12), Math.toRadians(0))
+                       // .splineTo(new Vector2d(0,0), Math.toRadians(0))
+
                         .build();
                 drive.followTrajectory(depositFirstWobblyGoal);
 
@@ -88,12 +90,14 @@ public class BlueSide extends LinearOpMode {
 
                 break;
             case CONTINUE:
-                intake.setPower(1);
+                telemetry.addData("STATE : ", ringPosition);
+                telemetry.update();
+               // intake.setPower(1.0);
                 Trajectory intakeAutoRings = drive.trajectoryBuilder(trajectoryStorage.end(), false)
                         .splineTo(new Vector2d(0,0), Math.toRadians(0))
                         .addDisplacementMarker(() -> {
-                            //stop intake
-                            intake.stop();
+                            //stop intake+
+                           // intake.stop();
                         })
 
                         .build();
@@ -109,6 +113,8 @@ public class BlueSide extends LinearOpMode {
 
             case ONE:
                 //TODO: ADD POWER SHOT METHOD
+                telemetry.addData("STATE : ", ringPosition);
+                telemetry.update();
                 Trajectory depositFirstWobblyGoalONE = drive.trajectoryBuilder(startPose)
                         .splineTo(new Vector2d(1,1), Math.toRadians(0))
                         .splineTo(new Vector2d(0,0), Math.toRadians(0))
@@ -135,6 +141,8 @@ public class BlueSide extends LinearOpMode {
 
             case ZERO:
                 //TODO: ADD POWER SHOT METHOD
+                telemetry.addData("STATE : ", ringPosition);
+                telemetry.update();
                 Trajectory depositFirstWobblyGoalZERO = drive.trajectoryBuilder(startPose)
                         .splineTo(new Vector2d(1,0), Math.toRadians(0))
                         .splineTo(new Vector2d(0,0), Math.toRadians(0))

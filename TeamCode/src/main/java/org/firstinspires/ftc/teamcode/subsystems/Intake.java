@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Intake {
@@ -11,11 +12,14 @@ public class Intake {
 
     public Intake(HardwareMap hwmp){
         hw = hwmp;
-        motor1 = hw.get(DcMotorEx.class, "intake1");
-        motor2 = hw.get(DcMotorEx.class, "intake2");
+        motor1 = hw.get(DcMotorEx.class, "im1");
+        motor2 = hw.get(DcMotorEx.class, "im2");
 
         motor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        motor2.setDirection(DcMotorSimple.Direction.REVERSE);
+
 
     }
 
