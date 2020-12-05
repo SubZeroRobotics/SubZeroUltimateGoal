@@ -31,7 +31,8 @@ public class BlueSideV2 extends LinearOpMode {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         AutoTrajectories autoTrajectories = new AutoTrajectories(drive);
 
-
+        autoTrajectories.initTrajectories(startPose);
+        
 
         //vision code here
         PathState pathState = PathState.RING4;
