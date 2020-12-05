@@ -17,8 +17,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 
 
 @TeleOp(name = "FullTeleOp")
-public class
-TeleOpOBJ extends LinearOpMode {
+public class FullTeleOp extends LinearOpMode {
 
     //Shooter
     public Shooter shooter;
