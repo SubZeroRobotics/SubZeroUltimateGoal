@@ -25,6 +25,7 @@ public class FullTeleOp extends LinearOpMode {
     Servo angleFlap;
     Intake intake;
 
+    //statics
     public static double flapAngle = .35;
     public static double shooterPower = .95;
     public static long flickerDelay = 200;
@@ -32,6 +33,11 @@ public class FullTeleOp extends LinearOpMode {
     public boolean aPressed = false;
     public double forwardPower;
     public double reversePower;
+    public static final double  goalX = 0;
+    public static final double goalY = 0;
+    public double angleToShoot;
+
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -92,6 +98,7 @@ public class FullTeleOp extends LinearOpMode {
             telemetry.addData("x", poseEstimate.getX());
             telemetry.addData("y", poseEstimate.getY());
             telemetry.addData("heading", poseEstimate.getHeading());
+            telemetry.addData("angle to shoot", getAngleToShoot());
             telemetry.update();
 
 
@@ -112,4 +119,12 @@ public class FullTeleOp extends LinearOpMode {
         sleep(flickerDelay);
         linkage.flickerOut();
     }
+
+    public void turnToGoal(Pose2d robotPose, SampleMecanumDrive drive){
+         angleToShoot = Math.atan2(goalX - robotPose.getX(), goalY - robotPose.getY()) - robotPose.getHeading();
+        drive.turnAsync(angleToShoot);
+    }
+
+    public double getAngleToShoot(){ return Math.toDegrees(angleToShoot);}
+
 }
