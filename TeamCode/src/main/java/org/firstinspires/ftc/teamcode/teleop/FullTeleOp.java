@@ -84,6 +84,7 @@ public class FullTeleOp extends LinearOpMode {
             }
 
 
+
             //drivetrain
             drive.setWeightedDrivePower(
                     new Pose2d(
@@ -92,6 +93,10 @@ public class FullTeleOp extends LinearOpMode {
                             -gamepad1.right_stick_x
                     )
             );
+
+            if(gamepad1.y){
+                turnToGoal(drive.getPoseEstimate(),drive);
+            }
 
             drive.update();
             Pose2d poseEstimate = drive.getPoseEstimate();
