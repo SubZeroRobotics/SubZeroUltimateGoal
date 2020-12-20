@@ -9,11 +9,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.autonomous.trajectories.AutoTrajectories;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.subsystems.Linkage;
+import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 
 @Autonomous(name = "BlueSideV2")
 public class BlueSideV2 extends LinearOpMode {
 
-    public enum PathState{
+    public enum State{
         RING1,
         RING4,
         RING0,
@@ -22,20 +24,24 @@ public class BlueSideV2 extends LinearOpMode {
     }
 
 
+  //  State ring_position = State.RING4;
+
+    public Linkage linkage;
+    public Shooter shooter;
 
     public Pose2d startPose = new Pose2d(0,0,0);
-
 
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        AutoTrajectories autoTrajectories = new AutoTrajectories(drive);
-
+        linkage = new Linkage(hardwareMap, 0.27,0.87, 0.12,0.32);
+        shooter = new Shooter(hardwareMap);
+        AutoTrajectories autoTrajectories = new AutoTrajectories(hardwareMap,drive,shooter,linkage);
         autoTrajectories.initTrajectories(startPose);
 
 
         //vision code here
-        PathState pathState = PathState.RING4;
+        State pathState = State.RING4;
         waitForStart();
 
 
@@ -43,24 +49,46 @@ public class BlueSideV2 extends LinearOpMode {
 
         switch(pathState){
             case RING1:
-                drive.followTrajectory(autoTrajectories.trajectoryRing1.get(0));
-                sleep(200);
-                drive.followTrajectory(autoTrajectories.trajectoryRing1.get(1));
-                sleep(100);
-                drive.followTrajectory(autoTrajectories.trajectoryRing1.get(2));
-                drive.followTrajectory(autoTrajectories.trajectoryRing1.get(3));
-            break;
+                //do something
 
+            break;
             case RING4:
+                //drive
+                autoTrajectories.linkage.lower();
+                sleep(500);
+                drive.followTrajectory(autoTrajectories.trajectoryRing4.get(0));
+                drive.followTrajectory(autoTrajectories.trajectoryRing4.get(1));
+                linkage.flickerIn();
+                sleep(100);
+                sleep(200);
+                linkage.flickerOut();
+                sleep(5000);
 
-            break;
+//                sleep(500);
+//                drive.turn(Math.toRadians(-10));
+//                sleep(500);
+//
+//                linkage.flickerIn();
+//                sleep(100);
+//                sleep(200);
+//                linkage.flickerOut();
+//
+//                sleep(500);
+//                drive.turn(Math.toRadians(-10));
+//                sleep(500);
+//
+//                linkage.flickerIn();
+//                sleep(100);
+//                sleep(200);
+//                linkage.flickerOut();
 
+
+                pathState = State.CONTINUE;
+                break;
             case RING0:
 
             break;
-
             case CONTINUE:
-
             break;
         }
     }

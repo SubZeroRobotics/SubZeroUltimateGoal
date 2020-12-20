@@ -44,7 +44,7 @@ public class ShooterTesting extends LinearOpMode {
         shooter = new Shooter(hardwareMap);
         SimpleServo angler = new SimpleServo(hardwareMap, "flap");
         SimpleServo indexer = new SimpleServo(hardwareMap, "pusher");
-        Linkage linkage = new Linkage(hardwareMap, push,pull);
+     //   Linkage linkage = new Linkage(hardwareMap, push,pull);
         angler.setPosition(1);
         waitForStart();
         timer.startTime();

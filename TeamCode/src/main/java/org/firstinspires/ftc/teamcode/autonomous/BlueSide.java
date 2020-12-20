@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.util.TrajectoryStorage;
 
 @Autonomous(name = "BlueSiden")
+@Disabled
 public class BlueSide extends LinearOpMode {
        //creating ring state machine
        public static enum RingPosition {
