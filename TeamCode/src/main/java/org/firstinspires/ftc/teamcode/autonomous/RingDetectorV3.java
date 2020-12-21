@@ -9,6 +9,7 @@ import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
+import org.openftc.easyopencv.OpenCvInternalCamera2;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
@@ -19,26 +20,35 @@ public class RingDetectorV3 {
     HardwareMap hwmp;
     Telemetry telemetry;
     Double ringCount = 0.0;
+    double rows, rect1Cols, rect2Cols;
+
+    double lowColor;
+    double upColor;
 
 
-    public RingDetectorV3(String Color, HardwareMap hw, Telemetry telemetry){
+    public RingDetectorV3(String Color, HardwareMap hw, Telemetry telemetry, double rows, double rect1Cols, double rect2Cols){
         this.hwmp = hw;
         telemetry = telemetry;
+        this.rows = rows;
+        this.rect1Cols = rect1Cols;
+        this.rect2Cols = rect2Cols;
     }
 
 
-    public double getRingPosition(){
+    public void init(){
         int cameraMonitorViewId = hwmp.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hwmp.appContext.getPackageName());
-        phoneCam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
+        phoneCam = OpenCvCameraFactory.getInstance().createInternalCamera2(OpenCvInternalCamera2.CameraDirection.BACK, cameraMonitorViewId);
         phoneCam.setPipeline(new RingDetectorV3.RingDetectingPipeline());
         phoneCam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
-                phoneCam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+                phoneCam.startStreaming(640, 480, OpenCvCameraRotation.SIDEWAYS_LEFT);
             }
         });
-        return ringCount;
     }
+
+    public double getRingPosition(){
+        return ringCount; }
 
 
     class RingDetectingPipeline extends OpenCvPipeline {
@@ -59,9 +69,9 @@ public class RingDetectorV3 {
             input.copyTo(outputMat);
 
 
-            Rect rect = new Rect((int) Math.round(YCbCr.rows() * .18), (int) Math.round(YCbCr.cols() * .25), 119, 69);
+            Rect rect = new Rect((int) Math.round(YCbCr.rows() * rows), (int) Math.round(YCbCr.cols() * rect1Cols), 100, 69);
 
-            Rect rect2 = new Rect((int) Math.round(YCbCr.rows() * .18), (int) Math.round(YCbCr.cols() * .32), 119, 20);
+            Rect rect2 = new Rect((int) Math.round(YCbCr.rows() * rows), (int) Math.round(YCbCr.cols() * rect2Cols), 100, 20);
 
 
             Imgproc.rectangle(outputMat, rect, new Scalar(0, 0, 255), 2);
@@ -77,12 +87,13 @@ public class RingDetectorV3 {
             Core.extractChannel(lowerCrop, lowerCrop, 2);
             Core.extractChannel(upperCrop, upperCrop, 2);
 
+
             //take average
             Scalar lowerColor = Core.mean(lowerCrop);
             Scalar upperColor = Core.mean(upperCrop);
 
-            double lowColor = lowerColor.val[0];
-            double upColor = upperColor.val[0];
+             lowColor = lowerColor.val[0];
+             upColor = upperColor.val[0];
 
             //check which one to determine the
 
@@ -97,13 +108,20 @@ public class RingDetectorV3 {
             Imgproc.putText(outputMat,
                     "Rings : " + ringCount.toString(),
                     new Point(rect.x + 10, rect.y - 10),
-                    5,
+                    3,
                     .75,
-                    new Scalar(255, 0, 255),
+                    new Scalar(0, 0, 255),
                     1);
 
             return outputMat;
         }
+    }
+    public double getVal(){
+        return lowColor;
+    }
+
+    public double getVal2(){
+        return upColor;
     }
 }
 

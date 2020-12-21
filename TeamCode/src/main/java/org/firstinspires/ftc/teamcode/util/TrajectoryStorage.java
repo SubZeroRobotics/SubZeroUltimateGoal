@@ -4,15 +4,21 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 
 public class TrajectoryStorage {
-    Trajectory trajectory;
+   static Pose2d pose;
 
-    public TrajectoryStorage(Trajectory trajectory){
-        this.trajectory = trajectory;
+    public TrajectoryStorage(Pose2d pose){
+        this.pose = pose;
+    }
+
+    public TrajectoryStorage(){
 
     }
 
-    public Pose2d end(){
-        return trajectory.end();
+
+
+    public static Pose2d getPose(){
+        return pose;
     }
-    //hi
+
+
 }

@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.autonomous.trajectories.AutoTrajectories;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.Linkage;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
+import org.firstinspires.ftc.teamcode.util.TrajectoryStorage;
 
 @Autonomous(name = "BlueSideV2")
 public class BlueSideV2 extends LinearOpMode {
@@ -64,24 +65,9 @@ public class BlueSideV2 extends LinearOpMode {
                 linkage.flickerOut();
                 sleep(5000);
 
-//                sleep(500);
-//                drive.turn(Math.toRadians(-10));
-//                sleep(500);
-//
-//                linkage.flickerIn();
-//                sleep(100);
-//                sleep(200);
-//                linkage.flickerOut();
-//
-//                sleep(500);
-//                drive.turn(Math.toRadians(-10));
-//                sleep(500);
-//
-//                linkage.flickerIn();
-//                sleep(100);
-//                sleep(200);
-//                linkage.flickerOut();
 
+
+                TrajectoryStorage storage = new TrajectoryStorage(drive.getPoseEstimate());
 
                 pathState = State.CONTINUE;
                 break;

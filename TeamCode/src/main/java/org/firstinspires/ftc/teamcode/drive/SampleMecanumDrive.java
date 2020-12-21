@@ -203,6 +203,12 @@ public class SampleMecanumDrive extends MecanumDrive {
         waitForIdle();
     }
 
+
+
+    public void cancelFollowing() {
+        mode = Mode.IDLE;
+    }
+
     public Pose2d getLastError() {
         switch (mode) {
             case FOLLOW_TRAJECTORY:

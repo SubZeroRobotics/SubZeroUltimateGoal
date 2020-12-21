@@ -16,8 +16,9 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Linkage;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
+import org.firstinspires.ftc.teamcode.util.TrajectoryStorage;
 
-
+@Config
 @TeleOp(name = "TeleOp")
 public class FullTeleOp extends LinearOpMode {
 
@@ -31,16 +32,13 @@ public class FullTeleOp extends LinearOpMode {
 
     //non changing variables
     public static double flapAngle = .35;
-    public static long flickerDelay = 200;
+    public static long flickerDelay = 145
+            ;
     public boolean bPressed = false;
     public boolean aPressed = false;
     public boolean slowMode = false;
     public double forwardPower;
     public double reversePower;
-    public final double goalX = 0;
-    public final double goalY = 0;
-    public double angleToShoot;
-
     public Vector2d targetVector = new Vector2d(0,0);
     public double targetHeading = 0;
 
@@ -58,11 +56,15 @@ public class FullTeleOp extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
 
         shooter = new Shooter(hardwareMap);
-        linkage = new Linkage(hardwareMap, 0.27, 0.87, 0.05, 0.32);
+        linkage = new Linkage(hardwareMap, 0.27, 0.87, 0.12, 0.32);
         angleFlap = hardwareMap.get(Servo.class, "flap");
         intake = new Intake(hardwareMap);
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+//        drive.setPoseEstimate(TrajectoryStorage.getPose());
+        drive.setPoseEstimate(new Pose2d(0,0,0));
+
 
         waitForStart();
         while (!isStopRequested()) {
@@ -82,9 +84,9 @@ public class FullTeleOp extends LinearOpMode {
                     while (gamepad1.a) ;
                 }
                 if (aPressed) {
-                    shooter.setNoPIDPower(.89);
+                    shooter.setNoPIDPower(.96);
                 } else {
-                    shooter.setNoPIDPower(.3);
+                    shooter.setNoPIDPower(0);
                 }
                 //linkage
                 if (gamepad1.b) {
@@ -101,7 +103,7 @@ public class FullTeleOp extends LinearOpMode {
                         new Pose2d(
                                 -gamepad1.left_stick_y,
                                 -gamepad1.left_stick_x,
-                                -gamepad1.right_stick_y
+                                -gamepad1.right_stick_x
                         )
                 );
 
@@ -110,7 +112,7 @@ public class FullTeleOp extends LinearOpMode {
                 telemetry.addData("x", poseEstimate.getX());
                 telemetry.addData("y", poseEstimate.getY());
                 telemetry.addData("heading", poseEstimate.getHeading());
-                telemetry.addData("Flap Angle", angleFlap);
+                telemetry.addData("CURRENT MODE", currentMode);
                 telemetry.update();
 
                 if (gamepad1.x) {
@@ -123,8 +125,11 @@ public class FullTeleOp extends LinearOpMode {
                     sleep(flickerDelay);
                     actuateFlicker();
                     sleep(flickerDelay);
+                    linkage.lower();
+                    sleep(250);
+                    bPressed = !bPressed;
                 }
-                    if(gamepad1.a) {
+                    if(gamepad2.a) {
                         Trajectory traj1 = drive.trajectoryBuilder(poseEstimate)
                                 .splineTo(targetVector, targetHeading)
                                 .build();
@@ -133,11 +138,12 @@ public class FullTeleOp extends LinearOpMode {
 
                         currentMode = Mode.AUTOMATIC_CONTROL;
                 }
+                    break;
                 case AUTOMATIC_CONTROL:
-                    if (Math.abs(gamepad1.left_stick_x) > 0 || Math.abs(gamepad1.left_stick_y) > 0 || Math.abs(gamepad1.right_stick_x) > 0) {
-                        drive.cancelFollowing();
-                        currentMode = Mode.DRIVER_CONTROL;
-                    }
+//                    if (Math.abs(gamepad1.left_stick_x) > 0 || Math.abs(gamepad1.left_stick_y) > 0 || Math.abs(gamepad1.right_stick_x) > 0) {
+//                        drive.cancelFollowing();
+//                        currentMode = Mode.DRIVER_CONTROL;
+//                    }
 
                     // If drive finishes its task, cede control to the driver
                     if (!drive.isBusy()) {
