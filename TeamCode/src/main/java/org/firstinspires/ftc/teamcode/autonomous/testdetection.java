@@ -11,34 +11,38 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 @Autonomous(name = "testDetection")
 public class testdetection extends LinearOpMode {
     public static double rows = .12;
-        public static double rectCols = .39;
-        public static double rect2Cols = .46;
+    public static double rectCols = .39;
+    public static double rect2Cols = .46;
+    double ringCount = 0;
+
     @Override
     public void runOpMode() throws InterruptedException {
-        double ringCount = 0;
 
          RingDetectorV3 detector = new RingDetectorV3("BLUE",hardwareMap, telemetry,rows,rectCols,rect2Cols);
          detector.init();
          TelemetryPacket packet = new TelemetryPacket();
          FtcDashboard dashboard = FtcDashboard.getInstance();
 
+        while(!isStarted()) {
+            ringCount = detector.getRingPosition();
+            FtcDashboard.getInstance().startCameraStream(detector.phoneCam, 20);
 
-        ringCount =  detector.getRingPosition();
 
-        FtcDashboard.getInstance().startCameraStream(detector.phoneCam, 20);
+            packet.put("LowColor", detector.lowColor);
+            packet.put("UpColor", detector.upColor);
 
+            dashboard.sendTelemetryPacket(packet);
 
-        packet.put("LowColor", detector.lowColor);
-        packet.put("UpColor", detector.upColor);
-
-        dashboard.sendTelemetryPacket(packet);
-
-        telemetry.addData("RingCount", ringCount);
-        runOpMode();
-        while(opModeIsActive()){
+            telemetry.addData("RingCount", ringCount);
             telemetry.addData("LowColor", detector.getVal());
             telemetry.addData("UpColor", detector.getVal2());
             telemetry.update();
+        }
+
+
+        waitForStart();
+        while(opModeIsActive()){
+
         }
 
     }
