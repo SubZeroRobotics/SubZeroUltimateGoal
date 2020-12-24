@@ -31,7 +31,7 @@ public class FullTeleOp extends LinearOpMode {
     Intake intake;
 
     //non changing variables
-    public static double flapAngle = .35;
+    public static double flapAngle = .4;
     public static long flickerDelay = 145;
     public boolean bPressed = false;
     public boolean aPressed = false;
@@ -40,7 +40,7 @@ public class FullTeleOp extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         shooter = new Shooter(hardwareMap);
-        linkage = new Linkage(hardwareMap, 0.27, 0.87, 0.12, 0.32);
+        linkage = new Linkage(hardwareMap, .7, .38, .3, 0.52);
         angleFlap = hardwareMap.get(Servo.class, "flap");
         intake = new Intake(hardwareMap);
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);

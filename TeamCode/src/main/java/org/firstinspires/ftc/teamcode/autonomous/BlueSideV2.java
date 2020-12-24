@@ -35,7 +35,7 @@ public class BlueSideV2 extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
-        linkage = new Linkage(hardwareMap, 0.27,0.87, 0.12,0.32);
+        linkage = new Linkage(hardwareMap, .7, .38, .3, 0.52);
         shooter = new Shooter(hardwareMap);
         AutoTrajectories autoTrajectories = new AutoTrajectories(hardwareMap,drive,shooter,linkage);
         autoTrajectories.initTrajectories(startPose);

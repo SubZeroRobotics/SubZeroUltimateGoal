@@ -17,7 +17,6 @@ public class testdetection extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-
          RingDetectorV3 detector = new RingDetectorV3("BLUE",hardwareMap, telemetry,rows,rectCols,rect2Cols);
          detector.init();
          TelemetryPacket packet = new TelemetryPacket();
@@ -38,8 +37,6 @@ public class testdetection extends LinearOpMode {
             telemetry.addData("UpColor", detector.getVal2());
             telemetry.update();
         }
-
-
         waitForStart();
         while(opModeIsActive()){
 
