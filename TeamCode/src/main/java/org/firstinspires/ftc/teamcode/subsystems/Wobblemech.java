@@ -11,28 +11,35 @@ public class Wobblemech {
     Servo arm;
     public Wobblemech(HardwareMap hw){
         this.hw = hw;
-        gripper = hw.get(Servo.class, "gripper");
+        gripper = hw.get(Servo.class, "grabber");
         arm = hw.get(Servo.class, "arm");
     }
 
 
-    public void retract(){
-        arm.setPosition(0);
-    }
+    public void retract(){ arm.setPosition(.85); }
 
     public void extend(){
-        arm.setPosition(1);
+        arm.setPosition(.27);
     }
 
     public void grip(){
-        gripper.setPosition(0);
+        gripper.setPosition(.1);
     }
 
     public void letGo(){
-        gripper.setPosition(1);
+        gripper.setPosition(.4);
     }
 
+    public void idle(){ arm.setPosition(.45);}
+
     public void dropWobble(){
+        extend();
+        letGo();
+        retract();
+    }
+
+    public void gripWobble(){
+        letGo();
         extend();
         grip();
         retract();

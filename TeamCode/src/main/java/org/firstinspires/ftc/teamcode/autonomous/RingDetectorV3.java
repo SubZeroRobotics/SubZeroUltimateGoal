@@ -97,12 +97,12 @@ public class RingDetectorV3 {
 
             //check which one to determine the
 
-            if (lowColor > 15 && upColor > 15 && lowColor < 130 && upColor < 130) {
-                ringCount = 4.0;
-            } else if (lowColor > 10 && upColor < 15 && lowColor > 10 && upColor < 15) {
+            if (lowColor > 100 && upColor > 115 && lowColor < 105 && upColor < 125) {
+                ringCount = 1.0;
+            } else if (lowColor > 127 && upColor > 127) {
                 ringCount = 0.0;
             } else {
-                ringCount = 1.0;
+                ringCount = 4.0;
             }
 
             Imgproc.putText(outputMat,
