@@ -99,8 +99,41 @@ public class BlueSideV2 extends LinearOpMode {
 
         switch (pathState) {
             case RING1:
-                //do something
-
+                wobblemech.grip();
+                sleep(100);
+                drive.followTrajectory(autoTrajectories.trajectoryRing1.get(0));
+                //powershots
+                actuateFlicker();
+                sleep(150);
+                actuateFlicker();
+                sleep(250);
+                drive.turn(Math.toRadians(-12));
+                actuateFlicker();
+                sleep(150);
+                drive.turn(Math.toRadians(19));
+                actuateFlicker();
+                sleep(150);
+                //go to drop wobbly
+                drive.followTrajectory(autoTrajectories.trajectoryRing1.get(1));
+                shooter.setNoPIDPower(0);
+                //drive to rings
+                drive.followTrajectory(autoTrajectories.trajectoryRing1.get(2));
+                intake.setPower(1);
+                drive.followTrajectory(autoTrajectories.trajectoryRing1.get(3));
+                intake.setPower(0);
+                drive.followTrajectory(autoTrajectories.trajectoryRing1.get(4));
+                sleep(250);
+                wobblemech.idle();
+                sleep(100);
+                drive.followTrajectory(autoTrajectories.trajectoryRing1.get(5));
+                actuateFlicker();
+                sleep(150);
+                actuateFlicker();
+                sleep(150);
+                drive.followTrajectory(autoTrajectories.trajectoryRing1.get(6));
+                drive.followTrajectory(autoTrajectories.trajectoryRing1.get(7));
+                shooter.setNoPIDPower(0);
+                stop();
                 break;
             case RING4:
                 //drive to powershot
@@ -112,10 +145,10 @@ public class BlueSideV2 extends LinearOpMode {
                 sleep(150);
                 actuateFlicker();
                 sleep(250);
-                drive.turn(Math.toRadians(-15));
+                drive.turn(Math.toRadians(-12));
                 actuateFlicker();
                 sleep(150);
-                drive.turn(Math.toRadians(23));
+                drive.turn(Math.toRadians(19));
                 actuateFlicker();
                 sleep(150);
                 //go to drop wobbly
@@ -123,7 +156,7 @@ public class BlueSideV2 extends LinearOpMode {
                 shooter.setNoPIDPower(0);
                 //drive to rings
                 drive.followTrajectory(autoTrajectories.trajectoryRing4.get(2));
-                intake.setPower(-.5);
+                intake.setPower(-.6);
                 drive.followTrajectory(autoTrajectories.trajectoryRing4.get(3));
                 intake.setPower(.8);
                 drive.followTrajectory(autoTrajectories.trajectoryRing4.get(4));
@@ -147,20 +180,39 @@ public class BlueSideV2 extends LinearOpMode {
                 drive.followTrajectory(autoTrajectories.trajectoryRing4.get(7));
                 drive.followTrajectory(autoTrajectories.trajectoryRing4.get(8));
                 shooter.setNoPIDPower(0);
-                pathState = State.CONTINUE;
+                stop();
                 break;
+
+
                 case RING0:
-
-
-
-
-
-
-
-
-
-
-
+                    wobblemech.grip();
+                    sleep(100);
+                    drive.followTrajectory(autoTrajectories.trajectoryRing0.get(0));
+                    //powershots
+                    actuateFlicker();
+                    sleep(150);
+                    actuateFlicker();
+                    sleep(250);
+                    drive.turn(Math.toRadians(-12));
+                    actuateFlicker();
+                    sleep(150);
+                    drive.turn(Math.toRadians(19));
+                    actuateFlicker();
+                    sleep(150);
+                    //go to drop wobbly
+                    drive.followTrajectory(autoTrajectories.trajectoryRing0.get(1));
+                    shooter.setNoPIDPower(0);
+                    //drive to rings
+                    drive.followTrajectory(autoTrajectories.trajectoryRing0.get(2));
+                    sleep(200);
+                    wobblemech.grip();
+                    sleep(250);
+                    wobblemech.idle();
+                    sleep(100);
+                    drive.followTrajectory(autoTrajectories.trajectoryRing0.get(3));
+                    drive.followTrajectory(autoTrajectories.trajectoryRing0.get(4));
+                    shooter.setNoPIDPower(0);
+                    stop();
 
 
                 break;

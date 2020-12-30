@@ -30,7 +30,7 @@ public class Wobblemech {
         gripper.setPosition(.4);
     }
 
-    public void idle(){ arm.setPosition(.45);}
+    public void idle(){ arm.setPosition(.4);}
 
     public void dropWobble(){
         extend();
