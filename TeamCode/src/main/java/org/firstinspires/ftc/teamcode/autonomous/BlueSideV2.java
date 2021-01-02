@@ -96,24 +96,27 @@ public class BlueSideV2 extends LinearOpMode {
 
 
        while(opModeIsActive()){
+           drive.update();
 
-        switch (pathState) {
+
+           switch (pathState) {
             case RING1:
                 wobblemech.grip();
                 sleep(100);
                 drive.followTrajectory(autoTrajectories.trajectoryRing1.get(0));
                 //powershots
                 actuateFlicker();
-                sleep(150);
+                sleep(300);
                 actuateFlicker();
-                sleep(250);
+                sleep(300);
                 drive.turn(Math.toRadians(-12));
                 actuateFlicker();
-                sleep(150);
+                sleep(300);
                 drive.turn(Math.toRadians(19));
                 actuateFlicker();
-                sleep(150);
-                //go to drop wobbly
+                sleep(300);
+                telemetry.addData("Pose", drive.getPoseEstimate());
+                telemetry.update();
                 drive.followTrajectory(autoTrajectories.trajectoryRing1.get(1));
                 shooter.setNoPIDPower(0);
                 //drive to rings
@@ -141,16 +144,19 @@ public class BlueSideV2 extends LinearOpMode {
                 sleep(100);
                 drive.followTrajectory(autoTrajectories.trajectoryRing4.get(0));
                 //powershots
+                //powershots
                 actuateFlicker();
-                sleep(150);
+                sleep(300);
                 actuateFlicker();
-                sleep(250);
+                sleep(300);
                 drive.turn(Math.toRadians(-12));
                 actuateFlicker();
-                sleep(150);
+                sleep(300);
                 drive.turn(Math.toRadians(19));
                 actuateFlicker();
-                sleep(150);
+                sleep(300);
+                telemetry.addData("Pose", drive.getPoseEstimate());
+                telemetry.update();
                 //go to drop wobbly
                 drive.followTrajectory(autoTrajectories.trajectoryRing4.get(1));
                 shooter.setNoPIDPower(0);
@@ -190,15 +196,21 @@ public class BlueSideV2 extends LinearOpMode {
                     drive.followTrajectory(autoTrajectories.trajectoryRing0.get(0));
                     //powershots
                     actuateFlicker();
-                    sleep(150);
+                    sleep(300);
                     actuateFlicker();
-                    sleep(250);
+                    sleep(300);
                     drive.turn(Math.toRadians(-12));
                     actuateFlicker();
-                    sleep(150);
+                    sleep(300);
                     drive.turn(Math.toRadians(19));
                     actuateFlicker();
-                    sleep(150);
+                    sleep(300);
+                    telemetry.addData("Pose", drive.getPoseEstimate());
+                    telemetry.update();
+
+
+
+
                     //go to drop wobbly
                     drive.followTrajectory(autoTrajectories.trajectoryRing0.get(1));
                     shooter.setNoPIDPower(0);
@@ -212,7 +224,7 @@ public class BlueSideV2 extends LinearOpMode {
                     drive.followTrajectory(autoTrajectories.trajectoryRing0.get(3));
                     drive.followTrajectory(autoTrajectories.trajectoryRing0.get(4));
                     shooter.setNoPIDPower(0);
-                    stop();
+                      stop();
 
 
                 break;
@@ -226,5 +238,4 @@ public class BlueSideV2 extends LinearOpMode {
         sleep(150);
         linkage.flickerOut();
     }
-
 }

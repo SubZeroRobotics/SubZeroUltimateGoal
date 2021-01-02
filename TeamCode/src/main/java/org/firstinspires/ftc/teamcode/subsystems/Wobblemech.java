@@ -31,6 +31,8 @@ public class Wobblemech {
     }
 
     public void idle(){ arm.setPosition(.4);}
+    public void teleOpidle(){ arm.setPosition(.85);}
+    public void vertical(){ arm.setPosition(.625);}
 
     public void dropWobble(){
         extend();

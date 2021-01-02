@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Linkage;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
+import org.firstinspires.ftc.teamcode.subsystems.Wobblemech;
 import org.firstinspires.ftc.teamcode.util.TrajectoryStorage;
 
 @Config
@@ -25,16 +26,21 @@ public class FullTeleOp extends LinearOpMode {
     //Shooter
     public Shooter shooter;
     public Linkage linkage;
+    Wobblemech wobblemech;
     Servo angleFlap;
 
     //Intake
     Intake intake;
 
     //non changing variables
-    public static double flapAngle = .4;
+    public static double flapAngle = .425;
     public static long flickerDelay = 145;
     public boolean bPressed = false;
     public boolean aPressed = false;
+    public boolean rStickButton = false;
+    public boolean aPressed2 = false;
+    public boolean slowMode = false;
+    public double multiplier = .45;
     public double forwardPower;
     public double reversePower;
     @Override
@@ -43,6 +49,7 @@ public class FullTeleOp extends LinearOpMode {
         linkage = new Linkage(hardwareMap, .7, .38, .3, 0.52);
         angleFlap = hardwareMap.get(Servo.class, "flap");
         intake = new Intake(hardwareMap);
+        wobblemech = new Wobblemech(hardwareMap);
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         waitForStart();
@@ -63,6 +70,9 @@ public class FullTeleOp extends LinearOpMode {
                 } else {
                     shooter.setNoPIDPower(0);
                 }
+
+
+
                 //linkage
                 if (gamepad1.b) {
                     bPressed = !bPressed;
@@ -76,6 +86,8 @@ public class FullTeleOp extends LinearOpMode {
 
 
                 //drivetrain
+
+
                 drive.setWeightedDrivePower(
                         new Pose2d(
                                 -gamepad1.left_stick_y,
@@ -104,6 +116,39 @@ public class FullTeleOp extends LinearOpMode {
                     sleep(250);
                     bPressed = !bPressed;
                 }
+
+            if(gamepad2.dpad_up){
+                wobblemech.extend();
+            }
+            if(gamepad2.dpad_down){
+                wobblemech.teleOpidle();
+            }
+
+            if (gamepad2.a) {
+                aPressed2 = !aPressed2;
+                while (gamepad2.a);
+            }
+
+            if(aPressed2){
+                wobblemech.letGo();
+                sleep(100);
+            }else {
+                wobblemech.grip();
+                sleep(100);
+            }
+
+            //slow mode
+            if (gamepad1.right_stick_button) {
+                rStickButton =! rStickButton;
+                while (gamepad1.right_stick_button);
+            }
+
+            if(rStickButton){
+                slowMode = true;
+            }else {
+                slowMode = false;
+            }
+
         }
     }
     public void actuateFlicker() {

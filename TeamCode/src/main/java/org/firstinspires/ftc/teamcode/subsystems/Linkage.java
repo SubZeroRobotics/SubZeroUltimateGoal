@@ -11,11 +11,9 @@ public class Linkage {
 
     public  double flickerPush;
     public  double flickerPull;
-    private final double linkageUp;
-    private final double linkageDown;
-
+    public  double linkageUp;
+    public  double linkageDown;
     private long millis;
-
 
 
     public Linkage(HardwareMap hardwareMap,double up, double down, double in, double out){
