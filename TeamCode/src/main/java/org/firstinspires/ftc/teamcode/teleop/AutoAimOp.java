@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.vuforia.Device;
 
 import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
@@ -175,14 +176,10 @@ public class AutoAimOp extends LinearOpMode {
                     //----------------------------------------------------------------------------------------
                     //auto aim
                     boolean rStickVBval = gamepad1.right_stick_button;
-                    if(rStickVBval && !prevLeftStickButton){
-                        toggleAUTOTURN = ! toggleAUTOTURN;
-                    }
-                    if(toggleAUTOTURN){
+                    if(rStickVBval){
                         currentMode = Mode.ALIGN_TO_POINT;
-                    }else{
-                        currentMode = Mode.NORMAL_CONTROL;
                     }
+
                     prevLeftStickButton = rStickVBval;
                     //----------------------------------------------------------------------------------------
                     //flicking
