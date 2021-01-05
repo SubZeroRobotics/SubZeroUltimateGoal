@@ -3,117 +3,93 @@ package org.firstinspires.ftc.teamcode.subsystems;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Linkage {
     HardwareMap hardwareMap;
+    Shooter shooter;
     Servo linkage;
     Servo flicker;
 
-    public  double flickerPush;
-    public  double flickerPull;
-    public  double linkageUp;
-    public  double linkageDown;
-    private long millis;
 
+    public double flickerPush;
+    public double flickerPull;
+    public double linkageUp;
+    public double linkageDown;
+    public boolean FIRST_SHOT = false, SECOND_SHOT = false, THIRD_SHOT = false;
 
-    public Linkage(HardwareMap hardwareMap,double up, double down, double in, double out){
+    private ElapsedTime fTimer = new ElapsedTime();
+    private ElapsedTime flick3Timer = new ElapsedTime();
+
+    public Linkage(HardwareMap hardwareMap, Shooter shooter, ElapsedTime elapsedTime, ElapsedTime elapsedTime2, double up, double down, double in, double out) {
         this.hardwareMap = hardwareMap;
+        this.shooter = shooter;
         flicker = hardwareMap.get(Servo.class, "pusher");
         linkage = hardwareMap.get(Servo.class, "linkage");
         linkageUp = up;
         linkageDown = down;
         flickerPush = in;
         flickerPull = out;
-        this.millis = millis;
+        this.fTimer = elapsedTime;
+        this.flick3Timer = elapsedTime2;
     }
 
-    private enum State {
-        RAISING_LINKAGE(130),
-        SHOT1(150),
-        IDLE_1(175),
-        SHOT_2(200),
-        IDLE_2(225),
-        SHOT_3(100),
-        IDLE_3(100);
-
-        public final long timeStamp;
-        private State(long timeStamp) {
-            this.timeStamp = timeStamp;
-        }
-    }
-
-    public void raise(){
+    //mag
+    public void raise() {
         linkage.setPosition(linkageUp);
     }
 
-    public void lower(){
+    public void lower() {
         linkage.setPosition(linkageDown);
     }
 
-    public void flickerIn(){
+    //flicker
+    public void flickerIn() {
         flicker.setPosition(flickerPush);
     }
-    public void flickerOut(){
+
+    public void flickerOut() {
         flicker.setPosition(flickerPull);
     }
 
+    //flicker automation
 
+    private boolean checkVelo(){
+        return shooter.getCurrentVelocity() >= 5760;
+    }
 
+    public void flick() {
+        fTimer.reset();
+        flickerIn();
+        if (fTimer.milliseconds() > 150) {
+            flickerOut();
+            fTimer.reset();
+        }
+    }
 
-    //run whole subsystem
-    public void run(){
-        State state = State.SHOT1;
-        long startTime = System.currentTimeMillis();
-        while(true) {
-            long elapsedTime = System.currentTimeMillis() - startTime;
-            //get the current time that has been elapsed
-            boolean progressState = (elapsedTime >= state.timeStamp);
-            //check if the elapsed time is
-            switch (state){
-                case RAISING_LINKAGE:
-                    if (progressState){
-                       // linkage.setPosition(linkageUp);
-                        state = State.SHOT1;
-                    }
-                    break;
-                case SHOT1:
-                    if(progressState){
-                        flicker.setPosition(flickerPush);
-                        state = State.IDLE_1;
-                    }
-                    break;
-                case SHOT_2:
-                    if(progressState){
-                        flicker.setPosition(flickerPush);
-                        state = State.IDLE_2;
-                    }
-                    break;
-                case SHOT_3:
-                    if(progressState){
-                        flicker.setPosition(flickerPush);
-                        state = State.IDLE_3;
-                    }
-                    break;
-                case IDLE_1:
-                    if(progressState){
-                        flicker.setPosition(flickerPull);
-                        state = State.SHOT_2;
-                    }
-                    break;
-                case IDLE_2:
-                    if(progressState){
-                        flicker.setPosition(flickerPull);
-                        state = State.SHOT_3;
-                    }
-                    break;
-                case IDLE_3:
-                    if(progressState){
-                        flicker.setPosition(flickerPull);
-                    }
-                    break;
+    public void flick3() {
+        fTimer.reset();
+        if(!FIRST_SHOT && checkVelo()){
+            if(fTimer.milliseconds() > 150){
+                flick();
+                FIRST_SHOT = true;
+                fTimer.reset();
             }
         }
-
+        if(FIRST_SHOT && checkVelo()){
+            if(fTimer.milliseconds() > 150){
+                flick();
+                SECOND_SHOT = true;
+                fTimer.reset();
+            }
+        }
+        if(SECOND_SHOT && checkVelo()){
+            if(fTimer.milliseconds() > 150){
+                flick();
+                SECOND_SHOT = true;
+                fTimer.reset();
+            }
+        }
     }
 
 }

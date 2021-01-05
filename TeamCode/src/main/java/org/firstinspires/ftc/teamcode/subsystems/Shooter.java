@@ -20,16 +20,15 @@ public class Shooter {
     private  HardwareMap hw;
 
     //other constants
-     static final double COUNTS_PER_REV = 28;
+    static final double COUNTS_PER_REV = 28;
     private static final double ROTATIONS_PER_MINUTE = 5480;
     public static double currentRPM;
     private static long lastTime;
     private static double lastPosition;
     private boolean runningPID = false;
+    public double currentTPS;
 
     //pid and elapsed time
-    private PIDController pidcontroller;
-    public PController pController = new PController(0.4);
 
     private static ElapsedTime linkageTimer = new ElapsedTime();
     private static ElapsedTime pusherTimer = new ElapsedTime();
@@ -62,7 +61,6 @@ public class Shooter {
 
         lastTime = System.currentTimeMillis();
         lastPosition = motor1.getCurrentPosition();
-        pidcontroller = new PIDController(0.4,0.0,0.0,.9, 6000);
     }
 
     public void start(){
@@ -74,21 +72,21 @@ public class Shooter {
     }
 
     public void update(){
-        double currentPosition = motor1.getCurrentPosition();
-        long currentTime = System.currentTimeMillis();
-        double deltaRotations = (currentPosition - lastPosition) / COUNTS_PER_REV;
-        double deltaMinutes = (currentTime - lastTime) / 60000.0;
-        currentRPM = (deltaRotations) / (deltaMinutes);
-        lastTime = currentTime;
-        lastPosition = currentPosition;
-
-        if(runningPID){
-           double power =  pidcontroller.calculate(currentRPM);
-            motor1.setPower(power);
-            motor2.setPower(power);
-        }else{
-            stop();
-        }
+//        double currentPosition = motor1.getCurrentPosition();
+//        long currentTime = System.currentTimeMillis();
+//        double deltaRotations = (currentPosition - lastPosition) / COUNTS_PER_REV;
+//        double deltaMinutes = (currentTime - lastTime) / 60000.0;
+//        currentRPM = (deltaRotations) / (deltaMinutes);
+//        lastTime = currentTime;
+//        lastPosition = currentPosition;
+//
+//        if(runningPID){
+//            double power =
+//            motor1.setPower(power);
+//            motor2.setPower(power);
+//        }else{
+//            stop();
+//        }
     }
 
 
@@ -99,13 +97,15 @@ public class Shooter {
 
     public void motorSetPIDpower(double power){
         double tps = ((ROTATIONS_PER_MINUTE / 60 / COUNTS_PER_REV) * power);
-        double currentTPS = motor1.getVelocity();
-        pController.setSetPoint(tps);
-        double output = pController.calculate(
-                currentTPS,
-                tps
-        );
+        PIDController pidcontroller = new PIDController(12,0,3, tps);
+        currentTPS = motor1.getVelocity();
+        double output = pidcontroller.calculate(currentTPS);
         motor1.setVelocity(output);
         motor2.setVelocity(output);
     }
+
+    public double getCurrentVelocity(){
+        return motor1.getVelocity();
+    }
+
 }

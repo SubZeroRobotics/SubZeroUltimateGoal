@@ -12,21 +12,7 @@ public class GamepadProcessing {
     }
 
 
-    public boolean isPressed(){
-         value = gamepad.;
-        if (value && !previous) {
-            toggle = !toggle;
-        }
 
-        if (toggle) {
-            return true;
-        } else {
-            return false;
-        }
-        previous = value;
-
-
-    }
 
 
 

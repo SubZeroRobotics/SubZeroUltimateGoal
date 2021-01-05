@@ -4,15 +4,18 @@ import android.os.UserManager;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Wobblemech {
     HardwareMap hw;
     Servo gripper;
     Servo arm;
-    public Wobblemech(HardwareMap hw){
+    ElapsedTime timer;
+    public Wobblemech(HardwareMap hw, ElapsedTime timer){
         this.hw = hw;
         gripper = hw.get(Servo.class, "grabber");
         arm = hw.get(Servo.class, "arm");
+        this.timer = timer;
     }
 
 
@@ -27,7 +30,7 @@ public class Wobblemech {
     }
 
     public void letGo(){
-        gripper.setPosition(.4);
+        gripper.setPosition(.6);
     }
 
     public void idle(){ arm.setPosition(.4);}
@@ -35,16 +38,17 @@ public class Wobblemech {
     public void vertical(){ arm.setPosition(.625);}
 
     public void dropWobble(){
+        timer.reset();
         extend();
-        letGo();
-        retract();
+        if(timer.milliseconds() > 150){
+            letGo();
+            timer.reset();
+        }
+        if(timer.milliseconds() > 100){
+            retract();
+        }
     }
 
-    public void gripWobble(){
-        letGo();
-        extend();
-        grip();
-        retract();
-    }
+
 
 }

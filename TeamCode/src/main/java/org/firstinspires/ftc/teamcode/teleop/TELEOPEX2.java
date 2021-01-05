@@ -17,8 +17,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Wobblemech;
 import org.firstinspires.ftc.teamcode.util.GamepadProcessing;
 
 @Config
-@TeleOp(name = "TELEOPEX")
-public class TELEOPEX extends LinearOpMode {
+@TeleOp(name = "TELEOPEX2")
+public class TELEOPEX2 extends LinearOpMode {
 
     //Shooter
     Shooter shooter;
@@ -41,6 +41,7 @@ public class TELEOPEX extends LinearOpMode {
 
     SampleMecanumDrive drive;
 
+
     //vars
     public  double up = 0.27;
     public  double down = 0.87;
@@ -50,9 +51,9 @@ public class TELEOPEX extends LinearOpMode {
 
     public static double flapAngle = .425;
 
-    public static double shooterPower = 1;
+    public static double shooterPower = .96;
 
-    public static long flickerDelay = 300;
+    public static long flickerDelay = 150;
     //gamepad
     boolean toggleShooter = false;
     boolean prevA = false;
@@ -66,22 +67,25 @@ public class TELEOPEX extends LinearOpMode {
     public boolean toggleSlowMode = false;
     boolean prevRightStickButton = false;
 
+
     public double slowModeMultiplier = .45;
 
-    public ElapsedTime elapsedTime = new ElapsedTime();
-    public ElapsedTime elapsedTime2 = new ElapsedTime();
-    public ElapsedTime elapsedTime3 = new ElapsedTime();
+    public ElapsedTime Wtimer = new ElapsedTime();
+    public ElapsedTime fTimer = new ElapsedTime();
+    public ElapsedTime f3Timer = new ElapsedTime();
     public ElapsedTime flapTimer = new ElapsedTime();
+
+
 
 
 
     @Override
     public void runOpMode() throws InterruptedException {
         shooter = new Shooter(hardwareMap);
-        linkage = new Linkage(hardwareMap,shooter, elapsedTime, elapsedTime2, .7,.38,.3,.52 );
+        linkage = new Linkage(hardwareMap, .7, .38, .3, 0.52);
         pusher = hardwareMap.get(Servo.class, "pusher");
         angleFlap = hardwareMap.get(Servo.class, "flap");
-        wobblemech = new Wobblemech(hardwareMap, elapsedTime3);
+        wobblemech = new Wobblemech(hardwareMap);
         drive = new SampleMecanumDrive(hardwareMap);
         intake = new Intake(hardwareMap);
         FL = hardwareMap.get(DcMotor.class, "FL");
@@ -89,9 +93,12 @@ public class TELEOPEX extends LinearOpMode {
         FR = hardwareMap.get(DcMotor.class, "FR");
         BR = hardwareMap.get(DcMotor.class, "BR");
 
+
         angleFlap.setPosition(flapAngle);
-        //wait for start
+
+
         waitForStart();
+
         while (opModeIsActive()){
             //intake
             //---------------------------------------------------------------------
@@ -100,6 +107,7 @@ public class TELEOPEX extends LinearOpMode {
             intake.setPower(forwardPower - reversePower);
 
             //---------------------------------------------------------------------
+
             //SHOOTER
             //----------------------------------------------------------------------
             boolean aValue = gamepad1.a;
@@ -108,12 +116,13 @@ public class TELEOPEX extends LinearOpMode {
             }
 
             if (toggleShooter) {
-                shooter.motorSetPIDpower(shooterPower);
+                shooter.setNoPIDPower(shooterPower);
             } else {
-               shooter.setNoPIDPower(0);
+                shooter.setNoPIDPower(0);
             }
             prevA = aValue;
             //-------------------------------------------------------------------
+
             //--------------------------------------------------------------------
             boolean bValue = gamepad1.b;
             if (bValue && !prevB) {
@@ -127,6 +136,7 @@ public class TELEOPEX extends LinearOpMode {
             }
             prevB = bValue;
             //----------------------------------------------------------------------
+
             //slow mode
             //--------------------------------------------------------------------------
             boolean rstcickBval = gamepad1.right_stick_button;
@@ -138,9 +148,9 @@ public class TELEOPEX extends LinearOpMode {
                 drive.setWeightedDrivePower(
                         new Pose2d(
                                 -gamepad1.left_stick_y * slowModeMultiplier,
-                               -gamepad1.left_stick_x * slowModeMultiplier,
-                               -gamepad1.right_stick_x * slowModeMultiplier
-                       )
+                                -gamepad1.left_stick_x * slowModeMultiplier,
+                                -gamepad1.right_stick_x * slowModeMultiplier
+                        )
                 );
             } else {
                 drive.setWeightedDrivePower(
@@ -153,28 +163,55 @@ public class TELEOPEX extends LinearOpMode {
             }
             prevRightStickButton = rstcickBval;
             //---------------------------------------------------------------------------------------
+
+
+
+            //shoot 3
+//            if (gamepad1.x){
+//                actuateFlicker();
+//                sleep(flickerDelay);
+//                actuateFlicker();
+//                sleep(flickerDelay);
+//                actuateFlicker();
+//                sleep(flickerDelay);
+//                actuateFlicker();
+//                sleep(flickerDelay);
+//            }
+
             if(gamepad1.x){
-                linkage.flick3();
+                actuateFlicker();
+                sleep(flickerDelay);
+                actuateFlicker();
+                sleep(flickerDelay);
+                actuateFlicker();
+                sleep(flickerDelay);
+                actuateFlicker();
+                sleep(flickerDelay);
                 toggleLinkage =! toggleLinkage;
             }
+            //shoot 1
             if (gamepad1.y){
-               linkage.flick();
+                flick();
             }
+
+
+            //wobble goal mech
+
             if(gamepad2.dpad_up){
                 wobblemech.extend();
             }
             if(gamepad2.dpad_down){
                 wobblemech.teleOpidle();
             }
+//            if(gamepad2.y) {
+//                wobblemech.vertical();
+//            }
 
             if(gamepad2.y){
                 wobblemech.vertical();
             }
-            //  ------------------------------------------------------------------
-            //AUTOMATED DROP
-            if(gamepad2.right_stick_button){
-                wobblemech.dropWobble();
-            }
+            //  --------------------------------------------------------------------------------------------
+
             //CLAW
             //--------------------------------------------------------------------
             boolean aval2 = gamepad2.a;
@@ -185,10 +222,11 @@ public class TELEOPEX extends LinearOpMode {
             if (toggleClaw) {
                 wobblemech.grip();
             } else {
-               wobblemech.letGo();
+                wobblemech.letGo();
             }
             prevA2 = aval2;
-            //--------------------------------------------------------------------
+            //----------------------------------------------------------------------
+
             if(gamepad2.x){
                 angleFlap.setPosition(.5);
                 sleep(100);
@@ -201,12 +239,46 @@ public class TELEOPEX extends LinearOpMode {
                 angleFlap.setPosition(.425);
                 sleep(100);
             }
+
+
+
+
         }
     }
     public void actuateFlicker() {
         linkage.flickerIn();
         sleep(150);
         linkage.flickerOut();
+    }
+
+    public void callWobbleSequence() {
+        Wtimer.reset();
+        wobblemech.extend();
+        if (Wtimer.milliseconds() >  300) {
+            wobblemech.letGo();
+            Wtimer.reset();
+        }
+        if (Wtimer.milliseconds() > 200) {
+            wobblemech.retract();
+            Wtimer.reset();
+        }
+    }
+
+    public void flick3(){
+        f3Timer.reset();
+        linkage.flickerIn();
+        if(fTimer.milliseconds() > 150){
+            actuateFlicker();
+            f3Timer.reset();
+        }
+        if(fTimer.milliseconds() > 150){
+            actuateFlicker();
+            f3Timer.reset();
+        }
+        if(fTimer.milliseconds() > 150){
+            actuateFlicker();
+            f3Timer.reset();
+        }
     }
 
     public void powerShotFlap(){
@@ -224,4 +296,6 @@ public class TELEOPEX extends LinearOpMode {
             angleFlap.setPosition(.425);
         }
     }
+
+
 }
