@@ -1,6 +1,11 @@
 package org.firstinspires.ftc.teamcode.teleop;
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.control.PIDFController;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -8,100 +13,95 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.vuforia.Device;
 
+import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Linkage;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.subsystems.Wobblemech;
+import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 
 @Config
-@TeleOp(name = "TELEOPEX2")
-public class TELEOPEX2 extends LinearOpMode {
-
+@TeleOp(name = "FieldCentricOp", group = "Competition")
+public class FieldCentricOp extends LinearOpMode {
     //Shooter
     Shooter shooter;
-
     Linkage linkage;
-    Servo pusher;
+    Servo flicker;
     Servo angleFlap;
     //Intake
     Intake intake;
-
     //wobble
     Wobblemech wobblemech;
-
     //Dt
-
     DcMotor FL;
     DcMotor BL;
     DcMotor FR;
     DcMotor BR;
-
-    SampleMecanumDrive drive;
-
-
     //vars
     public  double up = 0.27;
     public  double down = 0.87;
-
     public  double in = .05;
     public  double out = .32;
-
-    public static double flapAngle = .425;
-
-    public static double shooterPower = .96;
-
-    public static long flickerDelay = 150;
+    public static double flapAngle = .37;
+    public static double shooterPower = 1;
+    public static long flickerDelay = 300;
     //gamepad
     boolean toggleShooter = false;
     boolean prevA = false;
-
     boolean toggleLinkage = false;
     boolean prevB = false;
-
     boolean toggleClaw = false;
-    boolean prevA2 = false;
-
-    public boolean toggleSlowMode = false;
     boolean prevRightStickButton = false;
-
-
+    boolean toggleAUTOTURN;
+    boolean prevA2 = false;
+    public boolean toggleSlowMode = false;
+    boolean prevLeftStickButton = false;
     public double slowModeMultiplier = .45;
-
-    public ElapsedTime Wtimer = new ElapsedTime();
-    public ElapsedTime fTimer = new ElapsedTime();
-    public ElapsedTime f3Timer = new ElapsedTime();
-    public ElapsedTime flapTimer = new ElapsedTime();
-    public ElapsedTime elapsedTime2 = new ElapsedTime();
+    //timers
     public ElapsedTime elapsedTime = new ElapsedTime();
+    public ElapsedTime elapsedTime2 = new ElapsedTime();
     public ElapsedTime elapsedTime3 = new ElapsedTime();
-
-
-
-
+    public ElapsedTime flapTimer = new ElapsedTime();
+    //auto aim
 
     @Override
     public void runOpMode() throws InterruptedException {
         shooter = new Shooter(hardwareMap);
         linkage = new Linkage(hardwareMap,shooter, elapsedTime, elapsedTime2, .7,.38,.3,.52 );
-        pusher = hardwareMap.get(Servo.class, "pusher");
+        flicker = hardwareMap.get(Servo.class, "pusher");
         angleFlap = hardwareMap.get(Servo.class, "flap");
         wobblemech = new Wobblemech(hardwareMap, elapsedTime3);
-        drive = new SampleMecanumDrive(hardwareMap);
         intake = new Intake(hardwareMap);
         FL = hardwareMap.get(DcMotor.class, "FL");
         BL = hardwareMap.get(DcMotor.class, "BL");
         FR = hardwareMap.get(DcMotor.class, "FR");
         BR = hardwareMap.get(DcMotor.class, "BR");
 
+        //auto aim
+        SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        drive.getLocalizer().setPoseEstimate(new Pose2d(0,0,Math.toRadians(0)));
 
         angleFlap.setPosition(flapAngle);
-
-
+        ElapsedTime timer = new ElapsedTime();
+        boolean servoMoving = false;
+        timer.reset();
+        //wait for start
         waitForStart();
+        if (isStopRequested()) return;
+        while (opModeIsActive() && !isStopRequested()) {
+            // Read pose
+            Pose2d poseEstimate = drive.getLocalizer().getPoseEstimate();
+            // Declare a drive direction
+            // Pose representing desired x, y, and angular velocity
+            Pose2d driveDirection = new Pose2d();
+            // Declare telemetry packet for dashboard field drawing
+            TelemetryPacket packet = new TelemetryPacket();
+            Canvas fieldOverlay = packet.fieldOverlay();
 
-        while (opModeIsActive()){
             //intake
             //---------------------------------------------------------------------
             double forwardPower = -gamepad1.left_trigger;
@@ -109,7 +109,6 @@ public class TELEOPEX2 extends LinearOpMode {
             intake.setPower(forwardPower - reversePower);
 
             //---------------------------------------------------------------------
-
             //SHOOTER
             //----------------------------------------------------------------------
             boolean aValue = gamepad1.a;
@@ -124,7 +123,6 @@ public class TELEOPEX2 extends LinearOpMode {
             }
             prevA = aValue;
             //-------------------------------------------------------------------
-
             //--------------------------------------------------------------------
             boolean bValue = gamepad1.b;
             if (bValue && !prevB) {
@@ -138,85 +136,63 @@ public class TELEOPEX2 extends LinearOpMode {
             }
             prevB = bValue;
             //----------------------------------------------------------------------
-
-            //slow mode
+            //drive
             //--------------------------------------------------------------------------
-            boolean rstcickBval = gamepad1.right_stick_button;
-            if ( rstcickBval&& !prevRightStickButton) {
-                toggleSlowMode = !toggleSlowMode;
+
+
+            Pose2d pose = drive.getPoseEstimate();
+
+// Create a vector from the gamepad x/y inputs
+// Then, rotate that vector by the inverse of that heading
+            Vector2d input = new Vector2d(
+                    -gamepad1.left_stick_y,
+                    -gamepad1.left_stick_x
+            ).rotated(-pose.getHeading());
+
+// Pass in the rotated input + right stick value for rotation
+// Rotation is not part of the rotated input thus must be passed in separately
+            drive.setWeightedDrivePower(
+                    new Pose2d(
+                            input.getX(),
+                            input.getY(),
+                            -gamepad1.right_stick_x
+                    )
+            );
+
+
+
+            //----------------------------------------------------------------------------------------
+            //auto aim
+            //----------------------------------------------------------------------------------------
+            //flicking
+            if (gamepad1.y && timer.milliseconds() >= 150 && !servoMoving) {
+                flicker.setPosition(.3);
+                servoMoving = true;
+                timer.reset();
             }
 
-            if (toggleSlowMode) {
-                drive.setWeightedDrivePower(
-                        new Pose2d(
-                                -gamepad1.left_stick_y * slowModeMultiplier,
-                                -gamepad1.left_stick_x * slowModeMultiplier,
-                                -gamepad1.right_stick_x * slowModeMultiplier
-                        )
-                );
-            } else {
-                drive.setWeightedDrivePower(
-                        new Pose2d(
-                                -gamepad1.left_stick_y,
-                                -gamepad1.left_stick_x,
-                                -gamepad1.right_stick_x
-                        )
-                );
-            }
-            prevRightStickButton = rstcickBval;
-            //---------------------------------------------------------------------------------------
-
-
-
-            //shoot 3
-//            if (gamepad1.x){
-//                actuateFlicker();
-//                sleep(flickerDelay);
-//                actuateFlicker();
-//                sleep(flickerDelay);
-//                actuateFlicker();
-//                sleep(flickerDelay);
-//                actuateFlicker();
-//                sleep(flickerDelay);
-//            }
-
-            if(gamepad1.x){
-                actuateFlicker();
-                sleep(flickerDelay);
-                actuateFlicker();
-                sleep(flickerDelay);
-                actuateFlicker();
-                sleep(flickerDelay);
-                actuateFlicker();
-                sleep(flickerDelay);
-                toggleLinkage =! toggleLinkage;
-            }
-            //shoot 1
-            if (gamepad1.y){
+            if (timer.milliseconds() >= 150 && servoMoving) {
+                flicker.setPosition(.52);
+                servoMoving = false;
+                timer.reset();
             }
 
 
-            //wobble goal mech
-
-            if(gamepad2.dpad_up){
+            //wobble
+            if (gamepad2.dpad_up) {
                 wobblemech.extend();
             }
-            if(gamepad2.dpad_down){
+            if (gamepad2.dpad_down) {
                 wobblemech.teleOpidle();
             }
-//            if(gamepad2.y) {
-//                wobblemech.vertical();
-//            }
 
-            if(gamepad2.y){
+            if (gamepad2.y) {
                 wobblemech.vertical();
             }
-            //  --------------------------------------------------------------------------------------------
-
-            //CLAW
+            //  ------------------------------------------------------------------
             //--------------------------------------------------------------------
             boolean aval2 = gamepad2.a;
-            if ( aval2&& !prevA2) {
+            if (aval2 && !prevA2) {
                 toggleClaw = !toggleClaw;
             }
 
@@ -226,60 +202,33 @@ public class TELEOPEX2 extends LinearOpMode {
                 wobblemech.letGo();
             }
             prevA2 = aval2;
-            //----------------------------------------------------------------------
-
-            if(gamepad2.x){
+            //--------------------------------------------------------------------
+            if (gamepad2.x) {
                 angleFlap.setPosition(.5);
                 sleep(100);
-                angleFlap.setPosition(.435);
+                angleFlap.setPosition(.38);
                 sleep(100);
             }
-            if(gamepad2.b){
+            if (gamepad2.b) {
                 angleFlap.setPosition(.5);
                 sleep(100);
-                angleFlap.setPosition(.425);
+                angleFlap.setPosition(.37);
                 sleep(100);
             }
 
 
-
-
+            drive.getLocalizer().update();
+            telemetry.addData("x", poseEstimate.getX());
+            telemetry.addData("y", poseEstimate.getY());
+            telemetry.addData("heading", poseEstimate.getHeading());
+            telemetry.update();
         }
+
     }
     public void actuateFlicker() {
         linkage.flickerIn();
         sleep(150);
         linkage.flickerOut();
-    }
-
-    public void callWobbleSequence() {
-        Wtimer.reset();
-        wobblemech.extend();
-        if (Wtimer.milliseconds() >  300) {
-            wobblemech.letGo();
-            Wtimer.reset();
-        }
-        if (Wtimer.milliseconds() > 200) {
-            wobblemech.retract();
-            Wtimer.reset();
-        }
-    }
-
-    public void flick3(){
-        f3Timer.reset();
-        linkage.flickerIn();
-        if(fTimer.milliseconds() > 150){
-            actuateFlicker();
-            f3Timer.reset();
-        }
-        if(fTimer.milliseconds() > 150){
-            actuateFlicker();
-            f3Timer.reset();
-        }
-        if(fTimer.milliseconds() > 150){
-            actuateFlicker();
-            f3Timer.reset();
-        }
     }
 
     public void powerShotFlap(){
@@ -297,6 +246,4 @@ public class TELEOPEX2 extends LinearOpMode {
             angleFlap.setPosition(.425);
         }
     }
-
-
 }

@@ -26,11 +26,11 @@ public class Wobblemech {
     }
 
     public void grip(){
-        gripper.setPosition(.1);
+        gripper.setPosition(.15);
     }
 
     public void letGo(){
-        gripper.setPosition(.6);
+        gripper.setPosition(.55);
     }
 
     public void idle(){ arm.setPosition(.4);}

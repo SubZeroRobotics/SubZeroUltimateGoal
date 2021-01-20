@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.autonomous.trajectories.AutoTrajectories;
+import org.firstinspires.ftc.teamcode.autonomous.trajectories.AutoTrajectoriesHigh;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Linkage;
@@ -19,8 +20,8 @@ import org.firstinspires.ftc.teamcode.subsystems.Wobblemech;
 import org.firstinspires.ftc.teamcode.util.TrajectoryStorage;
 
 
-@Autonomous(name = "BlueSideV2")
-public class BlueSideV2 extends LinearOpMode {
+@Autonomous(name = "BlueSideV3")
+public class BlueSideV3 extends LinearOpMode {
 
     public enum State {
         RING1,
@@ -59,7 +60,7 @@ public class BlueSideV2 extends LinearOpMode {
         shooter = new Shooter(hardwareMap);
         intake = new Intake(hardwareMap);
         wobblemech = new Wobblemech(hardwareMap, elapsedTime3);
-        AutoTrajectories autoTrajectories = new AutoTrajectories(hardwareMap, drive, shooter, linkage, wobblemech);
+        AutoTrajectoriesHigh autoTrajectories = new AutoTrajectoriesHigh(hardwareMap, drive, shooter, linkage, wobblemech);
         autoTrajectories.initTrajectories(startPose);
 
 
@@ -101,99 +102,114 @@ public class BlueSideV2 extends LinearOpMode {
         waitForStart();
 
 
-       while(opModeIsActive()){
-           drive.update();
+        while(opModeIsActive()){
+            drive.update();
 
 
-           switch (pathState) {
-            case RING1:
-                wobblemech.grip();
-                sleep(100);
-                drive.followTrajectory(autoTrajectories.trajectoryRing1.get(0));
-                //powershots
-                actuateFlicker();
-                sleep(300);
-                actuateFlicker();
-                sleep(300);
-                drive.turn(Math.toRadians(-12));
-                actuateFlicker();
-                sleep(300);
-                drive.turn(Math.toRadians(19));
-                actuateFlicker();
-                sleep(300);
-                telemetry.addData("Pose", drive.getPoseEstimate());
-                telemetry.update();
-                drive.followTrajectory(autoTrajectories.trajectoryRing1.get(1));
-                shooter.setNoPIDPower(0);
-                //drive to rings
-                drive.followTrajectory(autoTrajectories.trajectoryRing1.get(2));
-                intake.setPower(1);
-                drive.followTrajectory(autoTrajectories.trajectoryRing1.get(3));
-                intake.setPower(0);
-                drive.followTrajectory(autoTrajectories.trajectoryRing1.get(4));
-                sleep(250);
-                wobblemech.idle();
-                sleep(100);
-                drive.followTrajectory(autoTrajectories.trajectoryRing1.get(5));
-                actuateFlicker();
-                sleep(150);
-                actuateFlicker();
-                sleep(150);
-                drive.followTrajectory(autoTrajectories.trajectoryRing1.get(6));
-                drive.followTrajectory(autoTrajectories.trajectoryRing1.get(7));
-                shooter.setNoPIDPower(0);
-                stop();
-                break;
-            case RING4:
-                //drive to powershot
-                wobblemech.grip();
-                sleep(100);
-                drive.followTrajectory(autoTrajectories.trajectoryRing4.get(0));
-                //powershots
-                //powershots
-                actuateFlicker();
-                sleep(300);
-                actuateFlicker();
-                sleep(300);
-                drive.turn(Math.toRadians(-12));
-                actuateFlicker();
-                sleep(300);
-                drive.turn(Math.toRadians(19));
-                actuateFlicker();
-                sleep(300);
-                telemetry.addData("Pose", drive.getPoseEstimate());
-                telemetry.update();
-                //go to drop wobbly
-                drive.followTrajectory(autoTrajectories.trajectoryRing4.get(1));
-                shooter.setNoPIDPower(0);
-                //drive to rings
-                drive.followTrajectory(autoTrajectories.trajectoryRing4.get(2));
-                intake.setPower(-.6);
-                drive.followTrajectory(autoTrajectories.trajectoryRing4.get(3));
-                intake.setPower(.8);
-                drive.followTrajectory(autoTrajectories.trajectoryRing4.get(4));
-                intake.setPower(-.8);
-                sleep(500);
-                intake.setPower(0);
-                drive.followTrajectory(autoTrajectories.trajectoryRing4.get(5));
-                sleep(250);
-                wobblemech.idle();
-                sleep(100);
-                drive.followTrajectory(autoTrajectories.trajectoryRing4.get(6));
-                actuateFlicker();
-                sleep(150);
-                actuateFlicker();
-                sleep(150);
-                actuateFlicker();
-                sleep(150);
-                actuateFlicker();
-                sleep(150);
-                actuateFlicker();
-                drive.followTrajectory(autoTrajectories.trajectoryRing4.get(7));
-                drive.followTrajectory(autoTrajectories.trajectoryRing4.get(8));
-                shooter.setNoPIDPower(0);
-                stop();
-                break;
+            switch (pathState) {
+                case RING1:
+
+                    wobblemech.grip();
+                    sleep(100);
+                    drive.followTrajectory(autoTrajectories.trajectoryRing1.get(0));
+
+                    //powershots
+                    actuateFlicker();
+                    sleep(600);
+                    actuateFlicker();
+                    sleep(600);
+                    actuateFlicker();
+                    sleep(600);
+                    actuateFlicker();
+                    sleep(600);
+
+                    linkage.lower();
+                    sleep(200);
+                    intake.setPower(1);
+                    drive.followTrajectory(autoTrajectories.trajectoryRing1.get(1));
+                    sleep(800);
+                    actuateFlicker();
+                    sleep(600);
+                    intake.stop();
+
+
+                    telemetry.addData("Pose", drive.getPoseEstimate());
+                    telemetry.update();
+                    drive.followTrajectory(autoTrajectories.trajectoryRing1.get(2));
+                    //drive to rings
+                    drive.followTrajectory(autoTrajectories.trajectoryRing1.get(3));
+
+                    sleep(250);
+                    wobblemech.idle();
+                    sleep(100);
+
+                    drive.followTrajectory(autoTrajectories.trajectoryRing1.get(4));
+
+                    drive.followTrajectory(autoTrajectories.trajectoryRing1.get(5));
+
+                    stop();
+                    break;
+                case RING4:
+                    //drive to powershot
+                    wobblemech.grip();
+                    sleep(100);
+                    drive.followTrajectory(autoTrajectories.trajectoryRing4.get(0));
+                    //powershots
+                    //powershots
+                    actuateFlicker();
+                    sleep(300);
+                    actuateFlicker();
+                    sleep(300);
+                    actuateFlicker();
+                    sleep(300);
+                    actuateFlicker();
+                    sleep(300);
+                    linkage.lower();
+                    intake.setPower(0);
+                    //go to drop wobbly
+                    drive.followTrajectory(autoTrajectories.trajectoryRing4.get(1));
+                    intake.setPower(1);
+                    drive.followTrajectory(autoTrajectories.trajectoryRing4.get(2));
+                    sleep(500);
+                    intake.setPower(-1);
+                    sleep(300);
+                    linkage.raise();
+                    sleep(1000);
+                    actuateFlicker();
+                    sleep(300);
+                    actuateFlicker();
+                    sleep(300);
+                    actuateFlicker();
+                    sleep(300);
+                    actuateFlicker();
+                    sleep(300);
+                    linkage.lower();
+                    sleep(100);
+                    intake.setPower(1);
+                    drive.followTrajectory(autoTrajectories.trajectoryRing4.get(3));
+                    intake.setPower(0);
+                    sleep(300);
+                    drive.followTrajectory(autoTrajectories.trajectoryRing4.get(4));
+                    wobblemech.grip();
+                    sleep(200);
+                    wobblemech.idle();
+                    sleep(200);
+                    drive.followTrajectory(autoTrajectories.trajectoryRing4.get(5));
+                    sleep(1000);
+                    actuateFlicker();
+                    sleep(150);
+                    actuateFlicker();
+                    sleep(150);
+                    actuateFlicker();
+                    sleep(150);
+                    actuateFlicker();
+                    sleep(150);
+                    drive.followTrajectory(autoTrajectories.trajectoryRing4.get(6));
+                    drive.followTrajectory(autoTrajectories.trajectoryRing4.get(7));
+
+
+                    stop();
+                    break;
 
 
                 case RING0:
@@ -205,10 +221,8 @@ public class BlueSideV2 extends LinearOpMode {
                     sleep(600);
                     actuateFlicker();
                     sleep(600);
-                    drive.turn(Math.toRadians(-12));
                     actuateFlicker();
                     sleep(600);
-                    drive.turn(Math.toRadians(19));
                     actuateFlicker();
                     sleep(600);
                     telemetry.addData("Pose", drive.getPoseEstimate());
@@ -230,14 +244,14 @@ public class BlueSideV2 extends LinearOpMode {
                     drive.followTrajectory(autoTrajectories.trajectoryRing0.get(3));
                     drive.followTrajectory(autoTrajectories.trajectoryRing0.get(4));
                     shooter.setNoPIDPower(0);
-                      stop();
+                    stop();
 
 
-                break;
-            case CONTINUE:
-                break;
+                    break;
+                case CONTINUE:
+                    break;
+            }
         }
-    }
     }
     public void actuateFlicker() {
         linkage.flickerIn();

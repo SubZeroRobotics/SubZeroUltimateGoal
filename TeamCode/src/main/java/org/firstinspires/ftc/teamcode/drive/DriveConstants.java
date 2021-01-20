@@ -66,10 +66,11 @@ public class DriveConstants {
      * small and gradually increase them later after everything is working. All distance units are
      * inches.
      */
-    public static DriveConstraints BASE_CONSTRAINTS = new DriveConstraints(
-            73.50393309, 73.50393309, 0.0,
-            Math.toRadians(359.7672057337132), Math.toRadians(359.7672057337132), 0.0
-    );
+    public static double MAX_VEL = 74;
+    public static double MAX_ACCEL = 65;
+    public static double MAX_ANG_VEL = Math.toRadians(180);
+    public static double MAX_ANG_ACCEL = Math.toRadians(180);
+
     /*
      * Note from LearnRoadRunner.com:
      * The velocity and acceleration constraints were calculated based on the following equation:

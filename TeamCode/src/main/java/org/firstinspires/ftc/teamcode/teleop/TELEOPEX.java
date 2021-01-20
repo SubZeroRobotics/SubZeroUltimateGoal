@@ -14,7 +14,6 @@ import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Linkage;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.subsystems.Wobblemech;
-import org.firstinspires.ftc.teamcode.util.GamepadProcessing;
 
 @Config
 @TeleOp(name = "TELEOPEX")

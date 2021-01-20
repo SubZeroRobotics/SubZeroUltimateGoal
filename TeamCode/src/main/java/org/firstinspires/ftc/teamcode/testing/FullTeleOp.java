@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
@@ -43,13 +44,18 @@ public class FullTeleOp extends LinearOpMode {
     public double multiplier = .45;
     public double forwardPower;
     public double reversePower;
+
+    public ElapsedTime elapsedTime2 = new ElapsedTime();
+    public ElapsedTime elapsedTime = new ElapsedTime();
+    public ElapsedTime elapsedTime3 = new ElapsedTime();
+
     @Override
     public void runOpMode() throws InterruptedException {
         shooter = new Shooter(hardwareMap);
-        linkage = new Linkage(hardwareMap, .7, .38, .3, 0.52);
+        linkage = new Linkage(hardwareMap,shooter, elapsedTime, elapsedTime2, .7,.38,.3,.52 );
         angleFlap = hardwareMap.get(Servo.class, "flap");
         intake = new Intake(hardwareMap);
-        wobblemech = new Wobblemech(hardwareMap);
+        wobblemech = new Wobblemech(hardwareMap, elapsedTime3);
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         waitForStart();
