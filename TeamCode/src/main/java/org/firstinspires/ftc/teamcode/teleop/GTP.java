@@ -26,8 +26,8 @@ import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 import org.opencv.core.Mat;
 
 @Config
-@TeleOp(name = "AUTOPS")
-public class AutoPS extends LinearOpMode {
+@TeleOp(name = "GTP")
+public class GTP extends LinearOpMode {
     //automation tings
     enum Mode {
         DRIVER_CONTROL,
@@ -56,8 +56,8 @@ public class AutoPS extends LinearOpMode {
     public  double down = 0.87;
     public  double in = .05;
     public  double out = .32;
-    public static double flapAngle = .34;
-    public static double shooterPower = .9;
+    public static double flapAngle = .32;
+    public static double shooterPower = 1;
     public static long flickerDelay = 300;
     //gamepad
     boolean toggleShooter = false;
@@ -158,6 +158,19 @@ public class AutoPS extends LinearOpMode {
                     //--------------------------------------------------------------------------
 
 
+                    //gtp
+                    if(gamepad1.right_stick_button){
+                        Trajectory goToPoint = drive.trajectoryBuilder(drive.getPoseEstimate())
+                                .lineToLinearHeading(new Pose2d(60.5,-24, Math.toRadians(0)))
+                                .addTemporalMarker(.5, () ->{
+                                   toggleLinkage =! toggleLinkage;
+                                   toggleShooter =! toggleShooter;
+                                })
+                                .build();
+                        drive.followTrajectory(goToPoint);
+                      currentMode = Mode.AUTO_PS;
+                    }
+
                     drive.setWeightedDrivePower(
                             new Pose2d(
                                     -gamepad1.left_stick_y,
@@ -170,7 +183,7 @@ public class AutoPS extends LinearOpMode {
                     //----------------------------------------------------------------------------------------
                     //auto ps
                     if(gamepad1.y){
-                        shooterPower = .75;
+                        shooterPower = .85;
                         drive.setPoseEstimate(new Pose2d(0,0,Math.toRadians(0)));
                         Trajectory goToRight = drive.trajectoryBuilder(drive.getPoseEstimate())
                                 .addDisplacementMarker(() -> {
@@ -199,18 +212,18 @@ public class AutoPS extends LinearOpMode {
                                 .build();
                         drive.followTrajectory(goToLeft);
                         actuateFlicker();
-                            currentMode = Mode.AUTO_PS;
+                        currentMode = Mode.AUTO_PS;
                     }
 
                     //----------------------------------------------------------------------------------------
                     //flicking
-                    if (gamepad1.x && timer.milliseconds() >= 150 && !servoMoving) {
+                    if (gamepad1.x && timer.milliseconds() >= 115 && !servoMoving) {
                         flicker.setPosition(.3);
                         servoMoving = true;
                         timer.reset();
                     }
 
-                    if (timer.milliseconds() >= 150 && servoMoving) {
+                    if (timer.milliseconds() >= 15 && servoMoving) {
                         flicker.setPosition(.52);
                         servoMoving = false;
                         timer.reset();
@@ -270,7 +283,7 @@ public class AutoPS extends LinearOpMode {
                         currentMode = Mode.DRIVER_CONTROL;
                         angleFlap.setPosition(.5);
                         sleep(120);
-                        angleFlap.setPosition(.34);
+                        angleFlap.setPosition(.32);
                         sleep(120);
                         shooterPower = .9;
                     }

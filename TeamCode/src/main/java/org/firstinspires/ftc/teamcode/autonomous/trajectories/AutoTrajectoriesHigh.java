@@ -67,9 +67,9 @@ public class AutoTrajectoriesHigh {
         Trajectory trajFour1 = drive.trajectoryBuilder(startPose)
                 .splineToConstantHeading(new Vector2d(26,12),0)
                 .addTemporalMarker(.5, () ->{
-                    shooter.setNoPIDPower(.9);
+                    shooter.motorSetPIDpower(.92);
                     linkage.raise();
-                    angleFlap.setPosition(.3425);
+                    angleFlap.setPosition(.37);
                 })
                 .addTemporalMarker(.1, () ->{
                     wobblemech.idle();
@@ -85,6 +85,9 @@ public class AutoTrajectoriesHigh {
                         new MecanumVelocityConstraint(20, DriveConstants.TRACK_WIDTH)
                 )
                 ), new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .addTemporalMarker(.5, () ->{
+                    angleFlap.setPosition(.5);
+                })
                 .addTemporalMarker(2, () ->{
                     angleFlap.setPosition(highGoalFlap);
                 })
@@ -98,11 +101,12 @@ public class AutoTrajectoriesHigh {
 
                 .lineToConstantHeading(new Vector2d(46,12), new MinVelocityConstraint(Arrays.asList(
                         new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
-                        new MecanumVelocityConstraint(5, DriveConstants.TRACK_WIDTH)
+                        new MecanumVelocityConstraint(3
+                                , DriveConstants.TRACK_WIDTH)
                 )
                 ), new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .addTemporalMarker(.5, () ->{
-                   shooter.setNoPIDPower(.9);
+                   shooter.motorSetPIDpower(.95);
                 })
 
 
@@ -119,6 +123,9 @@ public class AutoTrajectoriesHigh {
                     angleFlap.setPosition(.45);
                 })
                 .addDisplacementMarker(() -> {
+
+
+
                     //drop wobble
                     wobblemech.letGo();
                     angleFlap.setPosition(highGoalFlap);
@@ -152,14 +159,14 @@ public class AutoTrajectoriesHigh {
                 )
                 ), new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .addTemporalMarker(.2, () -> {
-                    shooter.setNoPIDPower(.9);
+                    shooter.motorSetPIDpower(.9);
                 })
                 .addTemporalMarker(.3, () -> {
                     // raise the linkage
                     //  shooter.setNoPIDPower(.9);
-                    angleFlap.setPosition(highGoalFlap);
+                    angleFlap.setPosition(.35);
                     linkage.raise();
-                    shooter.setNoPIDPower(1);
+                    shooter.motorSetPIDpower(.9);
                 })
                 .build();
         trajectoryRing4.add(trajFour6);
@@ -168,7 +175,7 @@ public class AutoTrajectoriesHigh {
         //shooting rings in high goal
         Trajectory trajFour7 = drive.trajectoryBuilder(trajFour6.end())
 
-                .lineToLinearHeading(new Pose2d(110,30, Math.toRadians(30)))
+                .lineToLinearHeading(new Pose2d(107,26, Math.toRadians(30)))
                 .addDisplacementMarker( () -> {
                     wobblemech.extend();
                 })
@@ -206,9 +213,9 @@ public class AutoTrajectoriesHigh {
         Trajectory trajOne1 = drive.trajectoryBuilder(startPose)
                 .splineToConstantHeading(new Vector2d(26,12),0)
                 .addTemporalMarker(.2, () ->{
-                    shooter.setNoPIDPower(.9);
+                    shooter.motorSetPIDpower(.92);
                     linkage.raise();
-                    angleFlap.setPosition(highGoalFlap);
+                    angleFlap.setPosition(.37);
                 })
                 .addTemporalMarker(.1, () ->{
                     wobblemech.idle();
@@ -218,10 +225,16 @@ public class AutoTrajectoriesHigh {
 
         Trajectory trajOne15 = drive.trajectoryBuilder(trajOne1.end())
                 .lineToConstantHeading(new Vector2d(38,12))
+                .addTemporalMarker(.5, () ->{
+                     angleFlap.setPosition(.5);
+                })
                 .addTemporalMarker(2, () ->{
-                    linkage.raise();
                     angleFlap.setPosition(highGoalFlap);
                 })
+                .addDisplacementMarker(() -> {
+                    linkage.raise();
+                })
+
                 .build();
 
         trajectoryRing1.add(trajOne15);
@@ -289,7 +302,7 @@ public class AutoTrajectoriesHigh {
         Trajectory trajZero1 = drive.trajectoryBuilder(startPose)
                 .splineToConstantHeading(new Vector2d(54.5,14),0)
                 .addTemporalMarker(.5, () ->{
-                    shooter.setNoPIDPower(1);
+                    shooter.motorSetPIDpower(1);
                     linkage.raise();
                     angleFlap.setPosition(.33);
                 })
@@ -350,6 +363,7 @@ public class AutoTrajectoriesHigh {
                 .addTemporalMarker(.5, () -> {
                     //shooter.setNoPIDPower(.9);
                     wobblemech.extend();
+                    shooter.motorSetPIDpower(0);
                 })
 
                 .build();

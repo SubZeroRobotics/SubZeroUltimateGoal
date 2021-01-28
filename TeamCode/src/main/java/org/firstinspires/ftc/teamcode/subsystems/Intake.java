@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.Range;
 
 public class Intake {
     private static DcMotorEx motor1;
@@ -24,8 +25,8 @@ public class Intake {
     }
 
     public void setPower(double power){
-        motor2.setPower(power);
-        motor1.setPower(power);
+        motor2.setPower(power * .8);
+        motor1.setPower(power  * .8);
     }
 
     public void stop(){

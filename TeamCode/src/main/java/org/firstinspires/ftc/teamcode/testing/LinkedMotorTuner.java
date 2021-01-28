@@ -13,11 +13,9 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.util.TuningController;
-
 @Config
 @TeleOp
-public class ShooterPIDtuner extends LinearOpMode {
+public class LinkedMotorTuner extends LinearOpMode {
     public static PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(0, 0, 0);
 
     public static double kV = 1 / TuningController.rpmToTicksPerSecond(TuningController.MOTOR_MAX_RPM);
@@ -45,7 +43,7 @@ public class ShooterPIDtuner extends LinearOpMode {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
 
-        PIDFController veloController = new PIDFController(MOTOR_VELO_PID, kV, kA, kStatic);
+        VelocityPIDFController veloController = new VelocityPIDFController(MOTOR_VELO_PID, kV, kA, kStatic);
         TuningController tuningController = new TuningController();
 
         double lastTargetVelo = 0.0;
@@ -69,7 +67,6 @@ public class ShooterPIDtuner extends LinearOpMode {
         while (!isStopRequested() && opModeIsActive()) {
             double targetVelo = tuningController.update();
 
-            veloController.setTargetPosition(targetVelo);
             veloController.setTargetVelocity(targetVelo);
             veloController.setTargetAcceleration((targetVelo - lastTargetVelo) / veloTimer.seconds());
             veloTimer.reset();
@@ -78,9 +75,10 @@ public class ShooterPIDtuner extends LinearOpMode {
 
             telemetry.addData("targetVelocity", targetVelo);
 
+            double motorPos = myMotor1.getCurrentPosition();
             double motorVelo = myMotor1.getVelocity();
 
-            double power = veloController.update(motorVelo);
+            double power = veloController.update(motorPos, motorVelo);
             myMotor1.setPower(power);
             myMotor2.setPower(power);
 
@@ -89,7 +87,7 @@ public class ShooterPIDtuner extends LinearOpMode {
                 lastKa = kA;
                 lastKstatic = kStatic;
 
-                veloController = new PIDFController(MOTOR_VELO_PID, kV, kA, kStatic);
+                veloController = new VelocityPIDFController(MOTOR_VELO_PID, kV, kA, kStatic);
             }
 
             telemetry.addData("velocity", motorVelo);

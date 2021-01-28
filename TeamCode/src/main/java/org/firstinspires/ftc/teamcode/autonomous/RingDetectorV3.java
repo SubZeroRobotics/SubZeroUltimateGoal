@@ -97,7 +97,7 @@ public class RingDetectorV3 {
 
             //check which one to determine the
 
-            if (lowColor > 100 && upColor > 115 && lowColor < 105 && upColor < 125) {
+            if (lowColor > 100 && upColor > 115 && lowColor < 112 && upColor < 125) {
                 ringCount = 1.0;
             } else if (lowColor > 127 && upColor > 127) {
                 ringCount = 0.0;

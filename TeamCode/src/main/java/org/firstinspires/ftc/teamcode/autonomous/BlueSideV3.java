@@ -101,8 +101,10 @@ public class BlueSideV3 extends LinearOpMode {
         //vision code here
         waitForStart();
 
+        shooter.veloTimer.reset();
+        while(opModeIsActive() && !isStopRequested()){
+            detector.phoneCam.stopStreaming();
 
-        while(opModeIsActive()){
             drive.update();
 
 
@@ -233,7 +235,7 @@ public class BlueSideV3 extends LinearOpMode {
 
                     //go to drop wobbly
                     drive.followTrajectory(autoTrajectories.trajectoryRing0.get(1));
-                    shooter.setNoPIDPower(0);
+                    shooter.motorSetPIDpower(0);
                     //drive to rings
                     drive.followTrajectory(autoTrajectories.trajectoryRing0.get(2));
                     sleep(200);
@@ -243,7 +245,7 @@ public class BlueSideV3 extends LinearOpMode {
                     sleep(100);
                     drive.followTrajectory(autoTrajectories.trajectoryRing0.get(3));
                     drive.followTrajectory(autoTrajectories.trajectoryRing0.get(4));
-                    shooter.setNoPIDPower(0);
+                    shooter.motorSetPIDpower(0);
                     stop();
 
 

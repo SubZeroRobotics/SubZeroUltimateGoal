@@ -54,9 +54,7 @@ public class Linkage {
 
     //flicker automation
 
-    private boolean checkVelo(){
-        return shooter.getCurrentVelocity() >= 5760;
-    }
+
 
     public void flick() {
         fTimer.reset();
@@ -67,29 +65,6 @@ public class Linkage {
         }
     }
 
-    public void flick3() {
-        fTimer.reset();
-        if(!FIRST_SHOT && checkVelo()){
-            if(fTimer.milliseconds() > 150){
-                flick();
-                FIRST_SHOT = true;
-                fTimer.reset();
-            }
-        }
-        if(FIRST_SHOT && checkVelo()){
-            if(fTimer.milliseconds() > 150){
-                flick();
-                SECOND_SHOT = true;
-                fTimer.reset();
-            }
-        }
-        if(SECOND_SHOT && checkVelo()){
-            if(fTimer.milliseconds() > 150){
-                flick();
-                SECOND_SHOT = true;
-                fTimer.reset();
-            }
-        }
-    }
+
 
 }

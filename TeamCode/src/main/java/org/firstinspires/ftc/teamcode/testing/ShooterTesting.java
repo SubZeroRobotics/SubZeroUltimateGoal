@@ -56,7 +56,7 @@ public class ShooterTesting extends LinearOpMode {
                // shooter.stop();
                 shooter.setNoPIDPower(0);
             }
-            shooter.update();
+         //   shooter.update();
         }
 
 
