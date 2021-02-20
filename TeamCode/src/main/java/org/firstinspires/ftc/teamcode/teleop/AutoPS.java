@@ -22,11 +22,12 @@ import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Linkage;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.subsystems.Wobblemech;
+import org.firstinspires.ftc.teamcode.testing.PathFollower;
 import org.firstinspires.ftc.teamcode.util.DashboardUtil;
 import org.opencv.core.Mat;
 
 @Config
-@TeleOp(name = "AUTOPS")
+@TeleOp(name = "COMPETITION TELEOP")
 public class AutoPS extends LinearOpMode {
     //automation tings
     enum Mode {
@@ -56,8 +57,8 @@ public class AutoPS extends LinearOpMode {
     public  double down = 0.87;
     public  double in = .05;
     public  double out = .32;
-    public static double flapAngle = .34;
-    public static double shooterPower = .9;
+    public static double flapAngle = .38;
+    public static double shooterPower = .96;
     public static long flickerDelay = 300;
     //gamepad
     boolean toggleShooter = false;
@@ -79,6 +80,8 @@ public class AutoPS extends LinearOpMode {
     public ElapsedTime elapsedTime3 = new ElapsedTime();
     public ElapsedTime flapTimer = new ElapsedTime();
     //auto aim
+    Vector2d targetVector = new Vector2d(124,-25);
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -95,6 +98,9 @@ public class AutoPS extends LinearOpMode {
 
         //auto aim
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        PathFollower follower = new PathFollower(hardwareMap,drive);
+        boolean autoTurn = false;
+        follower.reset();
         drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         drive.getLocalizer().setPoseEstimate(new Pose2d(0,0,Math.toRadians(0)));
 
@@ -167,6 +173,20 @@ public class AutoPS extends LinearOpMode {
                     );
 
 
+                    if(gamepad1.right_stick_button){
+                        autoTurn = true;
+                        toggleLinkage = !toggleLinkage;
+                    }
+
+                    while(autoTurn){
+                        follower.turnToAbsolute(Math.toDegrees(Math.atan2( targetVector.getY() - drive.getPoseEstimate().getY(),targetVector.getX() - drive.getPoseEstimate().getX())), 1);
+                        if(!gamepad1.atRest()){
+                            autoTurn = false;
+                            break;
+                        }
+                    }
+
+
                     //----------------------------------------------------------------------------------------
                     //auto ps
                     if(gamepad1.y){
@@ -208,15 +228,21 @@ public class AutoPS extends LinearOpMode {
                         flicker.setPosition(.3);
                         servoMoving = true;
                         timer.reset();
+                        shotCounter++;
                     }
 
                     if (timer.milliseconds() >= 150 && servoMoving) {
                         flicker.setPosition(.52);
                         servoMoving = false;
                         timer.reset();
-
                     }
 
+
+                    if(shotCounter == 4 && linkage.isUp()) {
+                        linkage.lower();
+                    }else if(!linkage.isUp()){
+                        shotCounter = 0;
+                    }
 
 
 
@@ -261,7 +287,7 @@ public class AutoPS extends LinearOpMode {
                     telemetry.addData("mode", currentMode);
                     telemetry.addData("x", poseEstimate.getX());
                     telemetry.addData("y", poseEstimate.getY());
-                    telemetry.addData("heading", poseEstimate.getHeading());
+                    telemetry.addData("heading", Math.toDegrees(poseEstimate.getHeading()));
                     telemetry.addData("Shot Counter", shotCounter);
                     telemetry.update();
                     break;
@@ -281,6 +307,8 @@ public class AutoPS extends LinearOpMode {
         }
 
     }
+
+
     public void actuateFlicker() {
         linkage.flickerIn();
         sleep(150);

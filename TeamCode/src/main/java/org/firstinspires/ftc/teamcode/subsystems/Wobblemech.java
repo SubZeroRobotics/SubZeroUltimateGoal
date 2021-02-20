@@ -19,22 +19,20 @@ public class Wobblemech {
     }
 
 
-    public void retract(){ arm.setPosition(.85); }
+    public void retract(){ arm.setPosition(.68); }
 
     public void extend(){
         arm.setPosition(.27);
     }
 
-    public void grip(){
-        gripper.setPosition(.15);
-    }
+    public void grip(){ gripper.setPosition(.85); }
 
     public void letGo(){
         gripper.setPosition(.55);
     }
 
     public void idle(){ arm.setPosition(.4);}
-    public void teleOpidle(){ arm.setPosition(.85);}
+    public void teleOpidle(){ arm.setPosition(.68);}
     public void vertical(){ arm.setPosition(.625);}
 
     public void dropWobble(){

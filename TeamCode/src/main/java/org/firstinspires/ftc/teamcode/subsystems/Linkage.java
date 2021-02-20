@@ -8,7 +8,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class Linkage {
     HardwareMap hardwareMap;
     Shooter shooter;
-    Servo linkage;
+    Servo linkageL;
+    Servo linkageR;
     Servo flicker;
 
 
@@ -25,7 +26,8 @@ public class Linkage {
         this.hardwareMap = hardwareMap;
         this.shooter = shooter;
         flicker = hardwareMap.get(Servo.class, "pusher");
-        linkage = hardwareMap.get(Servo.class, "linkage");
+        linkageL = hardwareMap.get(Servo.class, "linkageL");
+        linkageR = hardwareMap.get(Servo.class, "linkageR");
         linkageUp = up;
         linkageDown = down;
         flickerPush = in;
@@ -36,11 +38,14 @@ public class Linkage {
 
     //mag
     public void raise() {
-        linkage.setPosition(linkageUp);
+        linkageL.setPosition(0.06);
+        linkageR.setPosition(0.43);
     }
 
     public void lower() {
-        linkage.setPosition(linkageDown);
+
+        linkageL.setPosition(.5);
+        linkageR.setPosition(0);
     }
 
     //flicker
@@ -65,6 +70,10 @@ public class Linkage {
         }
     }
 
+
+    public boolean isUp(){
+       return linkageL.getPosition() == linkageUp;
+    }
 
 
 }
