@@ -58,7 +58,7 @@ public class AutoPS extends LinearOpMode {
     public  double in = .05;
     public  double out = .32;
     public static double flapAngle = .38;
-    public static double shooterPower = .96;
+    public static double shooterPower = .9;
     public static long flickerDelay = 300;
     //gamepad
     boolean toggleShooter = false;
@@ -173,14 +173,22 @@ public class AutoPS extends LinearOpMode {
                     );
 
 
-                    if(gamepad1.right_stick_button){
+                    if(gamepad1.left_bumper){
                         autoTurn = true;
-                        toggleLinkage = !toggleLinkage;
                     }
+
+
+                    boolean prevB = gamepad1.b;
+                    boolean prevA = gamepad1.a;
+                    boolean prevX = gamepad1.x;
+                    boolean prevY = gamepad1.y;
+
 
                     while(autoTurn){
                         follower.turnToAbsolute(Math.toDegrees(Math.atan2( targetVector.getY() - drive.getPoseEstimate().getY(),targetVector.getX() - drive.getPoseEstimate().getX())), 1);
-                        if(!gamepad1.atRest()){
+
+                        if(!gamepad1.atRest() || prevB != gamepad1.b || prevA != gamepad1.a || prevX != gamepad1.a || prevY != gamepad1.y){
+                            drive.setWeightedDrivePower(new Pose2d(0,0,0));
                             autoTurn = false;
                             break;
                         }
@@ -288,7 +296,7 @@ public class AutoPS extends LinearOpMode {
                     telemetry.addData("x", poseEstimate.getX());
                     telemetry.addData("y", poseEstimate.getY());
                     telemetry.addData("heading", Math.toDegrees(poseEstimate.getHeading()));
-                    telemetry.addData("Shot Counter", shotCounter);
+                    telemetry.addData("follower heading error", follower.headingError);
                     telemetry.update();
                     break;
                 case AUTO_PS:
