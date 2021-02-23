@@ -57,8 +57,8 @@ public class AutoPS extends LinearOpMode {
     public  double down = 0.87;
     public  double in = .05;
     public  double out = .32;
-    public static double flapAngle = .38;
-    public static double shooterPower = .9;
+    public static double flapAngle = .43;
+    public static double shooterPower = .94;
     public static long flickerDelay = 300;
     //gamepad
     boolean toggleShooter = false;
@@ -198,11 +198,12 @@ public class AutoPS extends LinearOpMode {
                     //----------------------------------------------------------------------------------------
                     //auto ps
                     if(gamepad1.y){
-                        shooterPower = .75;
+
                         drive.setPoseEstimate(new Pose2d(0,0,Math.toRadians(0)));
                         Trajectory goToRight = drive.trajectoryBuilder(drive.getPoseEstimate())
                                 .addDisplacementMarker(() -> {
                                     //drop wobble
+                                    shooterPower = .44;
                                     linkage.raise();
 
                                 })
@@ -210,7 +211,7 @@ public class AutoPS extends LinearOpMode {
                                 .build();
                         angleFlap.setPosition(.5);
                         sleep(100);
-                        angleFlap.setPosition(.38);
+                        angleFlap.setPosition(.435);
                         sleep(100);
                         drive.followTrajectory(goToRight);
                         actuateFlicker();
@@ -304,9 +305,9 @@ public class AutoPS extends LinearOpMode {
                         currentMode = Mode.DRIVER_CONTROL;
                         angleFlap.setPosition(.5);
                         sleep(120);
-                        angleFlap.setPosition(.34);
+                        angleFlap.setPosition(.435);
                         sleep(120);
-                        shooterPower = .9;
+                        shooterPower = .94;
                     }
                     break;
 
