@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.autonomous;
 
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
@@ -29,7 +30,7 @@ import org.opencv.core.Mat;
 
 import java.util.Arrays;
 
-
+@Config
 @Autonomous(name = "BlueSideV5")
 public class BlueSideV5 extends LinearOpMode {
 
@@ -54,6 +55,9 @@ public class BlueSideV5 extends LinearOpMode {
     public static double rows = .12;
     public static double rectCols = .39;
     public static double rect2Cols = .46;
+
+
+
     double ringCount = 0;
 
 
@@ -114,42 +118,34 @@ public class BlueSideV5 extends LinearOpMode {
 
         //vision code here
         waitForStart();
-
         shooter.veloTimer.reset();
-        while(opModeIsActive() && !isStopRequested()){
-
             drive.update();
-
-
             switch (pathState) {
                 case RING1:
-                    detector.phoneCam.stopStreaming();
-
                     //  drive to shoot first powershot
                     Trajectory shootFirstPowershot = drive.trajectoryBuilder(startPose)
                             .addDisplacementMarker(() -> {
                                 //drop wobble
                                 wobblemech.grip();
                             })
-                            .splineToConstantHeading(new Vector2d(54,-19), Math.toRadians(0))
+                            .splineToConstantHeading(new Vector2d(54,-21), Math.toRadians(0))
                             .addTemporalMarker(.5, () ->{
+                                shooter.internalPID(1120);
                                 linkage.flickerOut();
-                                shooter.motorSetPIDpower(.44);
                                 linkage.raise();
-                                angleFlap.setPosition(.435);
+                                angleFlap.setPosition(.4);
                                 wobblemech.idle();
 
                             })
                             .build();
-
                     drive.followTrajectory(shootFirstPowershot);
                     sleep(200);
                     actuateFlicker();
                     sleep(600);
 
-                    //strafe to middle powershot
+                    //strafe to right powershot
                     Trajectory shootSecondPowershot = drive.trajectoryBuilder(shootFirstPowershot.end())
-                            .lineToConstantHeading(new Vector2d(54,-10.5),new MinVelocityConstraint(Arrays.asList(
+                            .lineToConstantHeading(new Vector2d(54,-2),new MinVelocityConstraint(Arrays.asList(
                                     new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
                                     new MecanumVelocityConstraint(35, DriveConstants.TRACK_WIDTH)
                             )
@@ -160,9 +156,9 @@ public class BlueSideV5 extends LinearOpMode {
                     actuateFlicker();
                     sleep(600);
 
-                    //Third Powershot
+                    //middle Powershot
                     Trajectory shootThirdPowershot = drive.trajectoryBuilder(shootSecondPowershot.end())
-                            .lineToConstantHeading(new Vector2d(54,-1),new MinVelocityConstraint(Arrays.asList(
+                            .lineToConstantHeading(new Vector2d(54,-15),new MinVelocityConstraint(Arrays.asList(
                                     new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
                                     new MecanumVelocityConstraint(35, DriveConstants.TRACK_WIDTH)
                             )
@@ -371,6 +367,9 @@ public class BlueSideV5 extends LinearOpMode {
                     intake.setPower(1);
 
                     Trajectory intakeTwo = drive.trajectoryBuilder(intakeOne.end())
+                            .addDisplacementMarker(() -> {
+                                angleFlap.setPosition(.4375);
+                            })
                             .lineTo(new Vector2d(40,12),new MinVelocityConstraint(Arrays.asList(
                                     new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
                                     new MecanumVelocityConstraint(2, DriveConstants.TRACK_WIDTH)
@@ -456,7 +455,7 @@ public class BlueSideV5 extends LinearOpMode {
                                 linkage.flickerOut();
                                 shooter.motorSetPIDpower(.44);
                                 linkage.raise();
-                                angleFlap.setPosition(.435);
+                                angleFlap.setPosition(.47);
                                 wobblemech.idle();
 
                             })
@@ -574,7 +573,7 @@ public class BlueSideV5 extends LinearOpMode {
                     double s = 5;
                     break;
             }
-        }
+
     }
     public void actuateFlicker() {
         linkage.flickerIn();

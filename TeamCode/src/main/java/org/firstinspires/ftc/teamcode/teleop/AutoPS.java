@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.teleop;
+  package org.firstinspires.ftc.teamcode.teleop;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
@@ -57,8 +57,8 @@ public class AutoPS extends LinearOpMode {
     public  double down = 0.87;
     public  double in = .05;
     public  double out = .32;
-    public static double flapAngle = .43;
-    public static double shooterPower = .94;
+    public static double flapAngle = .425;
+    public double shooterPower = .94;
     public static long flickerDelay = 300;
     //gamepad
     boolean toggleShooter = false;
@@ -194,36 +194,38 @@ public class AutoPS extends LinearOpMode {
                         }
                     }
 
+                    if(gamepad1.dpad_down){
+                        shooterPower = .675;
+                    }
+
 
                     //----------------------------------------------------------------------------------------
                     //auto ps
                     if(gamepad1.y){
-
                         drive.setPoseEstimate(new Pose2d(0,0,Math.toRadians(0)));
                         Trajectory goToRight = drive.trajectoryBuilder(drive.getPoseEstimate())
                                 .addDisplacementMarker(() -> {
                                     //drop wobble
-                                    shooterPower = .44;
                                     linkage.raise();
 
                                 })
-                                .lineToConstantHeading(new Vector2d(-5,22.5))
+                                .lineToConstantHeading(new Vector2d(-5,22))
                                 .build();
-                        angleFlap.setPosition(.5);
+                        angleFlap.setPosition(.52);
                         sleep(100);
-                        angleFlap.setPosition(.435);
+                        angleFlap.setPosition(.44);
                         sleep(100);
                         drive.followTrajectory(goToRight);
                         actuateFlicker();
 
                         Trajectory goToMiddle = drive.trajectoryBuilder(goToRight.end())
-                                .lineToConstantHeading(new Vector2d(-5,28))
+                                .lineToConstantHeading(new Vector2d(-5,29))
                                 .build();
                         drive.followTrajectory(goToMiddle);
                         actuateFlicker();
 
                         Trajectory goToLeft = drive.trajectoryBuilder(goToMiddle.end())
-                                .lineToConstantHeading(new Vector2d(-5,36))
+                                .lineToConstantHeading(new Vector2d(-5,37))
 
                                 .build();
                         drive.followTrajectory(goToLeft);
@@ -302,12 +304,12 @@ public class AutoPS extends LinearOpMode {
                     break;
                 case AUTO_PS:
                     if (!drive.isBusy()) {
-                        currentMode = Mode.DRIVER_CONTROL;
                         angleFlap.setPosition(.5);
                         sleep(120);
-                        angleFlap.setPosition(.435);
+                        angleFlap.setPosition(.425);
                         sleep(120);
                         shooterPower = .94;
+                        currentMode = Mode.DRIVER_CONTROL;
                     }
                     break;
 

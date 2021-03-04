@@ -57,8 +57,13 @@ public class Shooter {
 
 
     public void setNoPIDPower(double power){
-//        motor1.setPower(power);
-//        motor2.setPower(power);
+        myMotor1.setPower(power);
+        myMotor2.setPower(power);
+    }
+
+    public void internalPID(double tps){
+        myMotor1.setVelocity(tps);;
+        myMotor2.setVelocity(tps);;;
     }
 
     public void motorSetPIDpower(double decimal){
